@@ -1,0 +1,539 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.mlhframework:mlh_interview_framework.yml
+---
+metadata:
+  title: >-
+    Delegation of Parental Authority
+  short title: >-
+    Temporary parental powers
+  description: |-
+    This interview helps someone in Michigan make a Delegation of Parental Authority.
+  tags: []
+  authors:
+    - Emily Kress Miller
+  help_page_url: >-
+    https://michiganlegalhelp.org/resources/family/giving-someone-else-parental-authority-over-your-child-short-term-parental-power-of-attorney
+  help_page_title: >-
+    Giving Someone Else Parental Authority over Your Child (Short-Term Parental Power of Attorney)
+  allowed_courts: []
+  typical_role: "na"
+  al_weaver_version: "1.10.3"
+  generated_on: "2023-11-21"
+---
+code: |
+  github_repo_name =  'docassemble-DelegationOfParentalAuthority'
+---
+code: |
+  interview_short_title = "Get a Delegation of parental authority"
+---
+code: |
+  al_form_type = "other_form" 
+---
+objects:
+  - users: ALPeopleList.using(there_are_any=True)
+  - caregivers: ALPeopleList.using(ask_number=True,target_number=1)
+  - children: ALPeopleList.using(there_are_any=True)
+---
+sections:
+  - review_delegation_of_parental_authority: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_delegation_of_parental_authority
+code: |
+  # Set the allowed courts for this interview
+  nav.set_section("review_delegation_of_parental_authority")
+  MLH_intro_navigation
+  MLH_intro_saving_answers
+  do_not_use_for
+  user_role = "na"
+  user_ask_role = "na"
+  users.gather()
+  set_parts(subtitle=str(users))
+  military
+  start_end_info
+  effective_date
+  set_progress(14)
+  civilian_end_date
+  children.gather()
+  children[0].other_health_info
+  set_progress(28)
+  caregivers.gather()
+  caregivers[0].address.address
+  include_insurance_info
+  set_progress(42)
+  insurance_companies[0].policy_number
+  add_provider_info
+  providers[0].provider_type
+  set_progress(56)
+  preferred_hospital
+  hospitals[0].address.address
+  interview_order_delegation_of_parental_authority = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  delegation_of_parental_authority_intro
+  interview_order_delegation_of_parental_authority
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  delegation_of_parental_authority_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Delegation_of_parental_authority
+continue button field: delegation_of_parental_authority_intro
+question: |
+  Delegation of parental authority
+subquestion: |
+  This interview will help you make a Delegation of parental authority and a set of step-by-step instructions.
+  
+  Before you get started, please gather:
+  
+  1. Contact information for the person you want to give parental authority to.
+  2. **Optional**: Your children's health care information, including:
+    
+  * allergies
+  * medications
+  * insurance
+  * providers
+  * preferred hospital
+  
+  Most people take about 15-30 minutes to finish this interview. When you are finished, you need to print and sign this form to make it effective.
+---
+id: Do Not Use Warnings
+continue button field: do_not_use_for
+question: |
+  This tool is **not** for custody issues with your child's other parent.
+subquestion: |
+  This tool is not right for you if you want to change custody or parenting time between you and your child’s other parent.
+
+  * If you **need a custody order** and you are **not married** to your child’s other parent, visit [Filing a Custody Case (Unmarried Parents)](https://michiganlegalhelp.org/resources/family/filing-custody-case-unmarried-parents).
+  * If you **need a custody order** and you **are married** to your child’s other parent, visit [Filing for Divorce with Children](https://michiganlegalhelp.org/resources/family/filing-divorce-children).
+  * If you need to **change** parenting time in a custody case, visit [Filing to Change Parenting Time](https://michiganlegalhelp.org/resources/family/filing-change-parenting-time).
+---
+id: second parent signing
+question: |
+  Will your children's other parent also sign this form?
+fields:
+  - no label: users.there_is_another
+    datatype: yesnoradio
+---
+sets:
+  - users[i].name.first
+  - users[i].name.last
+  - users[i].name.middle
+  - users[i].name.suffix    
+id: other users names
+question: |
+  What is your children's other parent's name?
+fields:
+  - code: |
+      users[i].name_fields()
+---
+code: |
+  if users.number_gathered() == 2:
+    users.there_is_another = False
+---
+id: Are you in the military?
+question: | 
+  Are you in the military?
+subquestion: |
+  Some service members use a Delegation of Parental Authority because they are:
+  
+  * deployed in a foreign country, or 
+  * getting ready to deploy to a foreign country.
+fields:
+  - "Do you need this form for a military deployment?": military
+    datatype: yesnoradio
+    label above field: True
+  - note: |
+      ${ collapse_template(why_ask_military) }
+---
+template: why_ask_military
+subject: |
+  How is military service related to this form?
+content: |
+  In most cases, a Delegation of Parental Authority (DPA) can only be in place for 6 months. However, if you are a service member deployed in a foreign country, a DPA can be in place during your entire deployment, plus 31 days after you return.
+---
+id: start end info
+continue button field: start_end_info
+question: |
+  Starting and ending a DPA
+subquestion: |
+  % if military:
+  ## When will the DPA be effective?
+  
+  Most of the time, a DPA can only be in place for 6 months. But service members deployed to a foreign country can have a DPA in place as long as they are deployed, and then for 31 days after they return. This is true even if the deployment is longer than 6 months. 
+  % else: 
+  ## When will the DPA be effective?
+  
+  You can choose when this DPA starts and ends. It can only be in place for 6 months, but you can sign another DPA when this one ends, if needed. 
+  % endif
+
+  A DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make a decision for your children, the caregiver does not have a right to interfere.
+
+  ## Ending a DPA
+  
+  You can always end a DPA even if this form gives a later date. You can revoke (or cancel) a DPA by telling the named caregiver that you are ending it. It is a good idea to also end a DPA in writing.
+---
+id: When should the parental authority start
+question: |
+  When should the parental authority start?
+fields:
+  - "Start Date": effective_date
+    input type: radio
+    choices:
+      - A specific start date
+      - The date signed
+---
+id: when should the parental authority end
+question: |
+  when should the parental authority end?
+fields:
+  - "Expiration date": civilian_end_date
+    input type: radio
+    choices:
+      - For six months
+      - On a specific date
+  - "Expiration date": military_end_date
+    input type: radio
+    choices:
+      - On a specific date
+      - 31 days after I return
+  - "Expiration date": end_date
+    datatype: date
+---
+id: Child Information
+question: |
+  Child Information
+fields:
+  - "Other Health Information": children[0].other_health_info
+    input type: area
+  - "Medications that can NOT be given": children[0].bad_meds
+  - "Allergies": children[0].allergies
+  - "Health conditions": children[0].health_conditions
+  - "Medications": children[0].medications
+---
+id: Add provider information
+question: |
+  Add provider information?
+fields:
+  - "Want to add provider info?": add_provider_info
+    datatype: yesnoradio
+---
+id: Provider information
+question: |
+  Provider information
+fields:
+  - "Provider type": providers[0].provider_type
+    input type: radio
+    choices:
+      - Primary care physician/pediatrician
+      - Dentist
+      - Counselor
+      - Psychiatrist
+      - Other
+  - "Phone number": providers[0].phone_number
+  - "Provider Name": providers[0]
+  - "Provider address": providers[0].address.address
+---
+id: Do you have a preferred hospital
+question: |
+  Do you have a preferred hospital?
+fields:
+  - "Preferred hospital": preferred_hospital
+---
+id: Preferred hospital information
+question: |
+  Preferred hospital information
+fields:
+  - "Hospital's Address": hospitals[0].address.address
+  - "Hospital Name": hospitals[0]
+---
+id: Do you want to add insurance information
+question: |
+  Do you want to add insurance information?
+fields:
+  - "Add insurance information?": include_insurance_info
+    datatype: yesnoradio
+---
+id: Insurance information
+question: |
+  Insurance information
+fields:
+  - "Policy Number or Member ID": insurance_companies[0].policy_number
+  - "Group Number": insurance_companies[0].group_number
+  - "Insurance Company Name": insurance_companies[0]
+---
+id: preview delegation_of_parental_authority
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_delegation_of_parental_authority'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: delegation_of_parental_authority_preview_question    
+---
+code: |
+  signature_fields = []
+---
+code: |
+  i_we = DAEmpty()
+---
+code: |
+  child_or_children = DAEmpty()
+---
+code: |
+  my_our = DAEmpty()
+---
+id: delegation of parental authority review screen
+event: review_delegation_of_parental_authority
+question: |
+  Review your answers
+review:
+  - Edit: civilian_end_date
+    button: |
+      **Expiration date**:
+      ${ civilian_end_date }
+  - Edit: providers[0].provider_type
+    button: |
+      **Provider type**:
+      ${ providers[0].provider_type }
+  - Edit: preferred_hospital
+    button: |
+      **Preferred hospital**:
+      ${ preferred_hospital }
+  - Edit: insurance_companies[0].policy_number
+    button: |
+      **Policy Number or Member ID**:
+      ${ insurance_companies[0].policy_number }
+  - Edit: children.revisit
+    button: |
+      **Children**
+
+      % for item in children:
+        * ${ item }
+      % endfor
+  - Edit: military
+    button: |
+      **Military**:
+      ${ military }
+  - Edit: caregivers.revisit
+    button: |
+      **Caregivers**
+
+      % for item in caregivers:
+        * ${ item }
+      % endfor
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: i_we
+    button: |
+      **I we**:
+      ${ i_we }
+  - Edit: insurance_companies[0].group_number
+    button: |
+      **Group Number**:
+      ${ insurance_companies[0].group_number }
+  - Edit: hospitals[0].address.address
+    button: |
+      **Hospital's Address**:
+      ${ hospitals[0].address.address.block() }
+  - Edit: military_end_date
+    button: |
+      **Expiration date**:
+      ${ military_end_date }
+  - Edit: child_or_children
+    button: |
+      **Child or children**:
+      ${ child_or_children }
+  - Edit: insurance_companies[0]
+    button: |
+      **Insurance Company Name**:
+      ${ insurance_companies[0] }
+  - Edit: my_our
+    button: |
+      **My our**:
+      ${ my_our }
+  - Edit: providers[0].phone_number
+    button: |
+      **Phone number**:
+      ${ providers[0].phone_number }
+  - Edit: providers[0]
+    button: |
+      **Provider Name**:
+      ${ providers[0] }
+  - Edit: end_date
+    button: |
+      **Expiration date**:
+      ${ end_date }
+  - Edit: providers[0].address.address
+    button: |
+      **Provider address**:
+      ${ providers[0].address.address.block() }
+  - Edit: effective_date
+    button: |
+      **Start Date**:
+      ${ effective_date }
+  - Edit: hospitals[0]
+    button: |
+      **Hospital Name**:
+      ${ hospitals[0] }
+  - Edit: add_provider_info
+    button: |
+      **Want to add provider info?**:
+      ${ add_provider_info }
+  - Edit: include_insurance_info
+    button: |
+      **Add insurance information?**:
+      ${ include_insurance_info }
+---
+continue button field: children.revisit
+question: |
+  Edit children
+subquestion: |
+  ${ children.table }
+
+  ${ children.add_action() }
+---
+table: children.table
+rows: children
+columns:
+  - Other health info: |
+      row_item.other_health_info if defined("row_item.other_health_info") else ""
+  - Bad meds: |
+      row_item.bad_meds if defined("row_item.bad_meds") else ""
+  - Allergies: |
+      row_item.allergies if defined("row_item.allergies") else ""
+  - Health conditions: |
+      row_item.health_conditions if defined("row_item.health_conditions") else ""
+  - Medications: |
+      row_item.medications if defined("row_item.medications") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - other_health_info
+  - bad_meds
+  - allergies
+  - health_conditions
+  - medications
+  - name.first
+confirm: True
+
+---
+continue button field: caregivers.revisit
+question: |
+  Edit caregivers
+subquestion: |
+  ${ caregivers.table }
+
+  ${ caregivers.add_action() }
+---
+table: caregivers.table
+rows: caregivers
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+edit:
+  - name.first
+  - address.address
+confirm: True
+
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+
+---
+id: download delegation_of_parental_authority
+event: delegation_of_parental_authority_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_delegation_of_parental_authority'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=True) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - delegation_of_parental_authority_Post_interview_instructions: ALDocument.using(title="Instructions", filename="delegation_of_parental_authority_next_steps.docx", enabled=True, has_addendum=False)
+  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of parental authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_Post_interview_instructions, delegation_of_parental_authority_attachment], filename="delegation_of_parental_authority", title="All forms to download for your records", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment],  filename="delegation_of_parental_authority", title="All forms to file", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachment:
+  name: Post-interview-Instructions
+  filename: delegation_of_parental_authority_next_steps
+  docx template file: delegation_of_parental_authority_next_steps.docx
+  variable name: delegation_of_parental_authority_Post_interview_instructions[i]
+  skip undefined: True
+  tagged pdf: True
+---
+attachment:
+  name: delegation of parental authority
+  filename: delegation_of_parental_authority
+  variable name: delegation_of_parental_authority_attachment[i]
+  skip undefined: True
+  docx template file: delegation_of_parental_authority.docx
+  tagged pdf: True
+
+
+
