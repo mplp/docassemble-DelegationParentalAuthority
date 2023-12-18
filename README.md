@@ -1,4 +1,4 @@
-# docassemble.DelegationOfParentalAuthorityE
+# docassemble.DelegationOfParentalAuthority
 
 Delegation of parental authority
 
