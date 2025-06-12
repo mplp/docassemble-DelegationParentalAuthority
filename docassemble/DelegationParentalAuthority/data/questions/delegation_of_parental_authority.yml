@@ -12,6 +12,7 @@ metadata:
     This interview helps someone in Michigan make a Delegation of Parental Authority.
   tags: []
   authors:
+    - Rami Lorca
     - Emily Kress Miller
   help_page_url: >-
     https://michiganlegalhelp.org/resources/family/giving-someone-else-parental-authority-over-your-child-short-term-parental-power-of-attorney
@@ -22,6 +23,9 @@ metadata:
   al_weaver_version: "1.10.3"
   generated_on: "2023-11-21"
 ---
+features:
+  labels above fields: True
+---
 code: |
   github_repo_name =  'docassemble-DelegationOfParentalAuthority'
 ---
@@ -31,29 +35,55 @@ code: |
 code: |
   al_form_type = "other_form" 
 ---
+sections:
+  - signpost_intro: "Introduction"
+  - review_parent_info: "Parent Information"
+  - review_start_end_date: "Start/End Date"
+  - review_children_info: "Children Information"
+  - review_agent_info: "Agent Information"
+  - review_health_info: "Health Information"
+  - review_get_forms_info: "Get Your Forms"
+  - review_full: "✎ <u>Review / Edit</u>"
+---
 objects:
-  - users: ALPeopleList.using(there_are_any=True)
-  - caregivers: ALPeopleList.using(ask_number=True,target_number=1)
-  - children: ALPeopleList.using(there_are_any=True)
+  - users: ALPeopleList.using(auto_gather=True, complete_attribute="complete", target_number=1)
+  - other_parent: ALPeopleList.using(complete_attribute="complete")
+  - children: ALPeopleList.using(ask_number=True, complete_attribute="complete")
+  - agent: ALPeopleList.using(complete_attribute="complete")
+  - healthcare_provider: DAList.using(object_type=DAObject, complete_attribute="complete")
+  - hospital: DAList.using(object_type=DAObject, complete_attribute="complete")
 ---
 sections:
   - review_delegation_of_parental_authority: Review your answers
 ---
 #################### Interview order #####################
-comment: |
-  Controls order and branching logic for questions specific to this form
 id: interview_order_delegation_of_parental_authority
+mandatory: True
 code: |
-  # Set the allowed courts for this interview
-  nav.set_section("review_delegation_of_parental_authority")
-  MLH_intro_navigation
-  MLH_intro_saving_answers
+  nav.set_section("review_full")
+  nav.set_section("signpost_intro")
+  al_intro_screen
+  delegation_of_parental_authority_intro
   do_not_use_for
   user_role = "na"
   user_ask_role = "na"
+
+  nav.set_section("review_parent_info")
   users.gather()
+  if other_parent.there_are_any:
+    other_parent.gather()
   set_parts(subtitle=str(users))
   military
+
+  nav.set_section("review_start_end_date")
+  dpa_duration_intro
+  if not military:
+    dpa_start
+  dpa_end
+
+  nav.set_section("review_children_info")
+  children.target_number
+
   start_end_info
   effective_date
   set_progress(14)
@@ -74,24 +104,51 @@ code: |
   interview_order_delegation_of_parental_authority = True
 ---
 ###################### Main order ######################
-comment: |
-  This block includes the logic for standalone interviews.
-  Delete mandatory: True to include in another interview
-mandatory: True
+# code: |
+#   al_intro_screen
+#   delegation_of_parental_authority_intro
+#   interview_order_delegation_of_parental_authority
+#   signature_date
+#   # Store anonymous data for analytics / statistics
+#   store_variables_snapshot(
+#       persistent=True,
+#       data={
+#           "zip": showifdef("users[0].address.zip"),
+#           "reached_interview_end": True,
+#       },
+#   )
+#   delegation_of_parental_authority_download
+---
+###################### Other Code Blocks Start ######################
+---
 code: |
-  al_intro_screen
-  delegation_of_parental_authority_intro
-  interview_order_delegation_of_parental_authority
-  signature_date
-  # Store anonymous data for analytics / statistics
-  store_variables_snapshot(
-      persistent=True,
-      data={
-          "zip": showifdef("users[0].address.zip"),
-          "reached_interview_end": True,
-      },
-  )
-  delegation_of_parental_authority_download
+  users[i].name.first
+  users[i].complete = True
+---
+code: |
+  users[i].name.first
+  users[i].complete = True
+---
+code: |
+  other_parent[i].name.first
+  other_parent[i].complete = True
+---
+code: |
+  users.there_is_another = False
+---
+code: |
+  other_parent.there_is_another = False
+---
+code: |
+  dpa_end_choices = list() 
+  if military: 
+    dpa_end_choices.append({'31_days_after_return':'31 days after I return'})
+    dpa_end_choices.append({'specific_date':'Specific date'})
+  else:
+    dpa_end_choices.append({'6_months_after_start':'6 months from the date it starts'})
+    dpa_end_choices.append({'earlier_date':'On an earlier date'})
+---
+###################### Questions Start ######################
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -126,28 +183,49 @@ subquestion: |
   * If you **need a custody order** and you **are married** to your child’s other parent, visit [Filing for Divorce with Children](https://michiganlegalhelp.org/resources/family/filing-divorce-children).
   * If you need to **change** parenting time in a custody case, visit [Filing to Change Parenting Time](https://michiganlegalhelp.org/resources/family/filing-change-parenting-time).
 ---
-id: second parent signing
-question: |
-  Will your children's other parent also sign this form?
-fields:
-  - no label: users.there_is_another
-    datatype: yesnoradio
----
+id: user information
 sets:
   - users[i].name.first
   - users[i].name.last
   - users[i].name.middle
   - users[i].name.suffix    
-id: other users names
 question: |
-  What is your children's other parent's name?
+  Enter your name
 fields:
   - code: |
       users[i].name_fields()
 ---
-code: |
-  if users.number_gathered() == 2:
-    users.there_is_another = False
+id: other_parent there_are_any
+question: |
+  Other parent
+subquestion: |
+  ${ collapse_template(other_parent_explanation) }
+fields:
+  - Will your child(ren)'s other parent also sign this form?: other_parent.there_are_any
+    datatype: yesnoradio
+---
+id: other_parent information
+sets:
+  - other_parent[i].name.first
+  - other_parent[i].name.last
+  - other_parent[i].name.middle
+  - other_parent[i].name.suffix    
+question: |
+  Enter the other parent's information
+fields:
+  - code: |
+      other_parent[i].name_fields()
+---
+template: other_parent_explanation
+subject: |
+  Should my children's other parent sign this form?
+content: |
+  If your children have another legal parent, both parents can sign the DPA but you are not required to have the other parent sign. 
+  You can sign a DPA alone even if you have joint legal custody. However, if you have joint legal custody and only one parent signs, there will be some limits on the DPA.
+
+  In this situation, if parents share legal custody and only one signs the DPA, the DPA will only affect that parent’s rights to care and custody of the children. 
+  If only one parent signs the DPA, the person you name to care for your children can only make day-to-day decisions about your children. 
+  The caregiver would not be able to make decisions that would impact major issues such as changing school, religious training, or non-routine medical decisions.
 ---
 id: Are you in the military?
 question: | 
@@ -170,53 +248,72 @@ subject: |
 content: |
   In most cases, a Delegation of Parental Authority (DPA) can only be in place for 6 months. However, if you are a service member deployed in a foreign country, a DPA can be in place during your entire deployment, plus 31 days after you return.
 ---
-id: start end info
-continue button field: start_end_info
+id: dpa duration intro
 question: |
-  Starting and ending a DPA
+  DPA Duration 
 subquestion: |
   % if military:
-  ## When will the DPA be effective?
-  
-  Most of the time, a DPA can only be in place for 6 months. But service members deployed to a foreign country can have a DPA in place as long as they are deployed, and then for 31 days after they return. This is true even if the deployment is longer than 6 months. 
-  % else: 
-  ## When will the DPA be effective?
-  
+  Although most of the time a DPA can only be in place for 6 months, service members deployed to a foreign country can have a DPA in place as long as they are deployed, and then for 31 days after they return. This is true even if the deployment is longer than 6 months. 
+
+  A DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make decisions for your child, the caregiver does not have a right to interfere.
+
+  You can always end a DPA even if this form says it will be in place until a later date. You can revoke (or cancel) a DPA by telling the named caregiver that you are ending it. It is a good idea to also end a DPA in writing.
+  % else:
   You can choose when this DPA starts and ends. It can only be in place for 6 months, but you can sign another DPA when this one ends, if needed. 
+
+  No matter which dates you choose, a DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make a decision for your children, the caregiver does not have a right to interfere.
+
+  You can always end a DPA even if this form gives a later date. You can revoke (or cancel) a DPA by telling the named caregiver that you are ending it. It is a good idea to also end a DPA in writing.
   % endif
 
-  A DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make a decision for your children, the caregiver does not have a right to interfere.
-
-  ## Ending a DPA
-  
-  You can always end a DPA even if this form gives a later date. You can revoke (or cancel) a DPA by telling the named caregiver that you are ending it. It is a good idea to also end a DPA in writing.
+continue button field: dpa_duration_intro
 ---
-id: When should the parental authority start
+id: DPA start
 question: |
-  When should the parental authority start?
+  DPA Start
 fields:
-  - "Start Date": effective_date
-    input type: radio
+  - When should the DPA start?: dpa_start
+    datatype: radio
     choices:
-      - A specific start date
-      - The date signed
----
-id: when should the parental authority end
-question: |
-  when should the parental authority end?
-fields:
-  - "Expiration date": civilian_end_date
-    input type: radio
-    choices:
-      - For six months
-      - On a specific date
-  - "Expiration date": military_end_date
-    input type: radio
-    choices:
-      - On a specific date
-      - 31 days after I return
-  - "Expiration date": end_date
+      - The date I sign it: date_signed
+      - A different date: different_date
+  - On what specific date would you like the DPA to start?: dpa_start_date
     datatype: date
+    show if:
+      variable: dpa_start
+      is: different_date
+---
+reconsider: dpa_end_choices
+id: DPA end
+question: |
+  DPA End
+subquestion: |
+  % if not military:
+  ${ collapse_template(dpa_end_change) }
+  % endif
+fields:
+  - When should the DPA end?: dpa_end
+    datatype: radio
+    code: |
+      dpa_end_choices
+  - On what specific date would you like the DPA to end?: dpa_end_date
+    datatype: date
+    js show if: |
+      val('dpa_end') == 'specific_date' || val('dpa_end') == 'earlier_date'
+---
+template: dpa_end_change
+subject: |
+  What if I change my mind after completing this form?
+content: |
+  Your answer here will be printed on your form, but you can always end the DPA by telling the caregiver you name that you are ending it. You do not have to put it in writing, but having written proof that you ended the DPA is a good idea.
+---
+id: children number
+question: |
+  Your children
+fields:
+  - How many children will be included in your form?: children.target_number
+    datatype: integer 
+    min: 1
 ---
 id: Child Information
 question: |
