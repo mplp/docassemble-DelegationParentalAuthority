@@ -1,0 +1,179 @@
+---
+id: delegation of parental authority review screen
+event: review_delegation_of_parental_authority
+question: |
+  Review your answers
+review:
+  - Edit: civilian_end_date
+    button: |
+      **Expiration date**:
+      ${ civilian_end_date }
+  - Edit: providers[0].provider_type
+    button: |
+      **Provider type**:
+      ${ providers[0].provider_type }
+  - Edit: preferred_hospital
+    button: |
+      **Preferred hospital**:
+      ${ preferred_hospital }
+  - Edit: insurance_companies[0].policy_number
+    button: |
+      **Policy Number or Member ID**:
+      ${ insurance_companies[0].policy_number }
+  - Edit: children.revisit
+    button: |
+      **Children**
+
+      % for item in children:
+        * ${ item }
+      % endfor
+  - Edit: military
+    button: |
+      **Military**:
+      ${ military }
+  - Edit: caregivers.revisit
+    button: |
+      **Caregivers**
+
+      % for item in caregivers:
+        * ${ item }
+      % endfor
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: i_we
+    button: |
+      **I we**:
+      ${ i_we }
+  - Edit: insurance_companies[0].group_number
+    button: |
+      **Group Number**:
+      ${ insurance_companies[0].group_number }
+  - Edit: hospitals[0].address.address
+    button: |
+      **Hospital's Address**:
+      ${ hospitals[0].address.address.block() }
+  - Edit: military_end_date
+    button: |
+      **Expiration date**:
+      ${ military_end_date }
+  - Edit: child_or_children
+    button: |
+      **Child or children**:
+      ${ child_or_children }
+  - Edit: insurance_companies[0]
+    button: |
+      **Insurance Company Name**:
+      ${ insurance_companies[0] }
+  - Edit: my_our
+    button: |
+      **My our**:
+      ${ my_our }
+  - Edit: providers[0].phone_number
+    button: |
+      **Phone number**:
+      ${ providers[0].phone_number }
+  - Edit: providers[0]
+    button: |
+      **Provider Name**:
+      ${ providers[0] }
+  - Edit: end_date
+    button: |
+      **Expiration date**:
+      ${ end_date }
+  - Edit: providers[0].address.address
+    button: |
+      **Provider address**:
+      ${ providers[0].address.address.block() }
+  - Edit: effective_date
+    button: |
+      **Start Date**:
+      ${ effective_date }
+  - Edit: hospitals[0]
+    button: |
+      **Hospital Name**:
+      ${ hospitals[0] }
+  - Edit: add_provider_info
+    button: |
+      **Want to add provider info?**:
+      ${ add_provider_info }
+  - Edit: include_insurance_info
+    button: |
+      **Add insurance information?**:
+      ${ include_insurance_info }
+---
+continue button field: children.revisit
+question: |
+  Edit children
+subquestion: |
+  ${ children.table }
+
+  ${ children.add_action() }
+---
+table: children.table
+rows: children
+columns:
+  - Other health info: |
+      row_item.other_health_info if defined("row_item.other_health_info") else ""
+  - Bad meds: |
+      row_item.bad_meds if defined("row_item.bad_meds") else ""
+  - Allergies: |
+      row_item.allergies if defined("row_item.allergies") else ""
+  - Health conditions: |
+      row_item.health_conditions if defined("row_item.health_conditions") else ""
+  - Medications: |
+      row_item.medications if defined("row_item.medications") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - other_health_info
+  - bad_meds
+  - allergies
+  - health_conditions
+  - medications
+  - name.first
+confirm: True
+
+---
+continue button field: caregivers.revisit
+question: |
+  Edit caregivers
+subquestion: |
+  ${ caregivers.table }
+
+  ${ caregivers.add_action() }
+---
+table: caregivers.table
+rows: caregivers
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+edit:
+  - name.first
+  - address.address
+confirm: True
+
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+---

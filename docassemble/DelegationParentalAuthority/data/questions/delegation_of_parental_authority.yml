@@ -2,6 +2,7 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.mlhframework:mlh_interview_framework.yml
+  - review.yml
 ---
 metadata:
   title: >-
@@ -35,6 +36,17 @@ code: |
 code: |
   al_form_type = "other_form" 
 ---
+id: interview config code block
+code: |
+  github_repo_name = 'docassemble-DelegationParentalAuthority' if get_config('debug') else 'docassemble-UserFeedback'
+  MLH_court_forms = True
+  MLH_time_min = 15
+  MLH_time_max = 30
+  # MLH_case_type_language = 'The two-letter case type code will be PP, PH, or PJ.'
+  MLH_esign_supported = True
+  # survey_link_url_only = "https://www.surveymonkey.com/r/3BXDW9M"
+  MLH_form_type = "forms"
+---
 sections:
   - signpost_intro: "Introduction"
   - review_parent_info: "Parent Information"
@@ -65,8 +77,6 @@ code: |
   al_intro_screen
   delegation_of_parental_authority_intro
   do_not_use_for
-  user_role = "na"
-  user_ask_role = "na"
 
   nav.set_section("review_parent_info")
   users.gather()
@@ -98,24 +108,10 @@ code: |
     hospital.gather()
   
   nav.set_section("review_get_forms_info")
+  have_patience_download
+  MLH_download
 
   interview_order_delegation_of_parental_authority = True
----
-###################### Main order ######################
-# code: |
-#   al_intro_screen
-#   delegation_of_parental_authority_intro
-#   interview_order_delegation_of_parental_authority
-#   signature_date
-#   # Store anonymous data for analytics / statistics
-#   store_variables_snapshot(
-#       persistent=True,
-#       data={
-#           "zip": showifdef("users[0].address.zip"),
-#           "reached_interview_end": True,
-#       },
-#   )
-#   delegation_of_parental_authority_download
 ---
 ###################### Other Code Blocks Start ######################
 ---
@@ -166,7 +162,7 @@ code: |
 ---
 code: |
   hospital[i].hospital_name
-  hospital[i].address.address
+  hospital[i].address
   hospital[i].complete = True
 ---
 code: |
@@ -188,9 +184,9 @@ comment: |
 id: Delegation_of_parental_authority
 continue button field: delegation_of_parental_authority_intro
 question: |
-  Delegation of parental authority
+  Delegation of Parental Authority
 subquestion: |
-  This interview will help you make a Delegation of parental authority and a set of step-by-step instructions.
+  This interview will help you make a Delegation of Parental Authority and a set of step-by-step instructions.
   
   Before you get started, please gather:
   
@@ -576,11 +572,11 @@ fields:
 id: hospital information
 sets:
   - hospital[i].hospital_name
-  - hospital[i].address.address
-  - hospital[i].address.unit 
-  - hospital[i].address.city
-  - hospital[i].address.state 
-  - hospital[i].address.zip  
+  - hospital[i].address
+  - hospital[i].unit 
+  - hospital[i].city
+  - hospital[i].state 
+  - hospital[i].zip  
 question: |
   Health care providers
 fields:
@@ -602,231 +598,24 @@ subquestion: |
   ${ action_button_html(url_action('review_delegation_of_parental_authority'), label='Edit answers', color='info') }
   
   Remember to come back to this window to continue and sign your form.
-continue button field: delegation_of_parental_authority_preview_question    
+continue button field: delegation_of_parental_authority_preview_question
 ---
-code: |
-  signature_fields = []
----
-code: |
-  i_we = DAEmpty()
----
-code: |
-  child_or_children = DAEmpty()
----
-code: |
-  my_our = DAEmpty()
----
-id: delegation of parental authority review screen
-event: review_delegation_of_parental_authority
+id: patience download
+continue button field: have_patience_download
 question: |
-  Review your answers
-review:
-  - Edit: civilian_end_date
-    button: |
-      **Expiration date**:
-      ${ civilian_end_date }
-  - Edit: providers[0].provider_type
-    button: |
-      **Provider type**:
-      ${ providers[0].provider_type }
-  - Edit: preferred_hospital
-    button: |
-      **Preferred hospital**:
-      ${ preferred_hospital }
-  - Edit: insurance_companies[0].policy_number
-    button: |
-      **Policy Number or Member ID**:
-      ${ insurance_companies[0].policy_number }
-  - Edit: children.revisit
-    button: |
-      **Children**
-
-      % for item in children:
-        * ${ item }
-      % endfor
-  - Edit: military
-    button: |
-      **Military**:
-      ${ military }
-  - Edit: caregivers.revisit
-    button: |
-      **Caregivers**
-
-      % for item in caregivers:
-        * ${ item }
-      % endfor
-  - Edit: users.revisit
-    button: |
-      **Users**
-
-      % for item in users:
-        * ${ item }
-      % endfor
-  - Edit: i_we
-    button: |
-      **I we**:
-      ${ i_we }
-  - Edit: insurance_companies[0].group_number
-    button: |
-      **Group Number**:
-      ${ insurance_companies[0].group_number }
-  - Edit: hospitals[0].address.address
-    button: |
-      **Hospital's Address**:
-      ${ hospitals[0].address.address.block() }
-  - Edit: military_end_date
-    button: |
-      **Expiration date**:
-      ${ military_end_date }
-  - Edit: child_or_children
-    button: |
-      **Child or children**:
-      ${ child_or_children }
-  - Edit: insurance_companies[0]
-    button: |
-      **Insurance Company Name**:
-      ${ insurance_companies[0] }
-  - Edit: my_our
-    button: |
-      **My our**:
-      ${ my_our }
-  - Edit: providers[0].phone_number
-    button: |
-      **Phone number**:
-      ${ providers[0].phone_number }
-  - Edit: providers[0]
-    button: |
-      **Provider Name**:
-      ${ providers[0] }
-  - Edit: end_date
-    button: |
-      **Expiration date**:
-      ${ end_date }
-  - Edit: providers[0].address.address
-    button: |
-      **Provider address**:
-      ${ providers[0].address.address.block() }
-  - Edit: effective_date
-    button: |
-      **Start Date**:
-      ${ effective_date }
-  - Edit: hospitals[0]
-    button: |
-      **Hospital Name**:
-      ${ hospitals[0] }
-  - Edit: add_provider_info
-    button: |
-      **Want to add provider info?**:
-      ${ add_provider_info }
-  - Edit: include_insurance_info
-    button: |
-      **Add insurance information?**:
-      ${ include_insurance_info }
----
-continue button field: children.revisit
-question: |
-  Edit children
+  Almost done
 subquestion: |
-  ${ children.table }
+  After you tap **${MLH_continue_button_label}**, it may take a few minutes to finish making your forms.
 
-  ${ children.add_action() }
+  You **do not** need to refresh your screen. Hang in there!
 ---
-table: children.table
-rows: children
-columns:
-  - Other health info: |
-      row_item.other_health_info if defined("row_item.other_health_info") else ""
-  - Bad meds: |
-      row_item.bad_meds if defined("row_item.bad_meds") else ""
-  - Allergies: |
-      row_item.allergies if defined("row_item.allergies") else ""
-  - Health conditions: |
-      row_item.health_conditions if defined("row_item.health_conditions") else ""
-  - Medications: |
-      row_item.medications if defined("row_item.medications") else ""
-  - Name: |
-      row_item.name.full() if defined("row_item.name.first") else ""
-edit:
-  - other_health_info
-  - bad_meds
-  - allergies
-  - health_conditions
-  - medications
-  - name.first
-confirm: True
-
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_Post_interview_instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
 ---
-continue button field: caregivers.revisit
-question: |
-  Edit caregivers
-subquestion: |
-  ${ caregivers.table }
-
-  ${ caregivers.add_action() }
----
-table: caregivers.table
-rows: caregivers
-columns:
-  - Name: |
-      row_item.name.full() if defined("row_item.name.first") else ""
-  - Address: |
-      row_item.address.block() if defined("row_item.address.address") else ""
-edit:
-  - name.first
-  - address.address
-confirm: True
-
----
-continue button field: users.revisit
-question: |
-  Edit users
-subquestion: |
-  ${ users.table }
-
-  ${ users.add_action() }
----
-table: users.table
-rows: users
-columns:
-  - Name: |
-      row_item.name.full() if defined("row_item.name.first") else ""
-edit:
-  - name.first
-confirm: True
-
----
-id: download delegation_of_parental_authority
-event: delegation_of_parental_authority_download
-question: |
-  All done
-subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
-  
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
-
-  ${ action_button_html(url_action('review_delegation_of_parental_authority'), label='Edit answers', color='info') }
-  
-  
-  ${ al_user_bundle.download_list_html() }
-  
-
-  ${ al_user_bundle.send_button_html(show_editable_checkbox=True) }
-
-progress: 100
----
-# ALDocument objects specify the metadata for each template
 objects:
   - delegation_of_parental_authority_Post_interview_instructions: ALDocument.using(title="Instructions", filename="delegation_of_parental_authority_next_steps.docx", enabled=True, has_addendum=False)
-  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of parental authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
+  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
 ---
-# Bundles group the ALDocuments into separate downloads, such as for court and for the user
-objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_Post_interview_instructions, delegation_of_parental_authority_attachment], filename="delegation_of_parental_authority", title="All forms to download for your records", enabled=True)
-  - al_recipient_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment],  filename="delegation_of_parental_authority", title="All forms to file", enabled=True)
----
-# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
-# used for "preview" and "final" keys, and logic in the template checks the value of 
-# `i` to show or hide the user's signature
 attachment:
   name: Post-interview-Instructions
   filename: delegation_of_parental_authority_next_steps

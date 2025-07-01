@@ -1,6 +1,6 @@
 # docassemble.DelegationOfParentalAuthority
 
-Delegation of parental authority
+Delegation of Parental Authority
 
 ## Author
 
