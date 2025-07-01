@@ -41,7 +41,7 @@ sections:
   - review_start_end_date: "Start/End Date"
   - review_children_info: "Children Information"
   - review_agent_info: "Agent Information"
-  - review_health_info: "Health Information"
+  - review_healthcare_info: "Healthcare Information"
   - review_get_forms_info: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
@@ -49,9 +49,9 @@ objects:
   - users: ALPeopleList.using(auto_gather=True, complete_attribute="complete", target_number=1)
   - other_parent: ALPeopleList.using(complete_attribute="complete")
   - children: ALPeopleList.using(ask_number=True, complete_attribute="complete")
-  - agent: ALPeopleList.using(complete_attribute="complete")
-  - healthcare_provider: DAList.using(object_type=DAObject, complete_attribute="complete")
-  - hospital: DAList.using(object_type=DAObject, complete_attribute="complete")
+  - agent: ALPeopleList.using(there_are_any=True, complete_attribute="complete")
+  - healthcare_provider: ALPeopleList.using(complete_attribute="complete")
+  - hospital: ALAddressList.using(complete_attribute="complete")
 ---
 sections:
   - review_delegation_of_parental_authority: Review your answers
@@ -83,24 +83,22 @@ code: |
 
   nav.set_section("review_children_info")
   children.target_number
-
-  start_end_info
-  effective_date
-  set_progress(14)
-  civilian_end_date
   children.gather()
-  children[0].other_health_info
-  set_progress(28)
-  caregivers.gather()
-  caregivers[0].address.address
-  include_insurance_info
-  set_progress(42)
-  insurance_companies[0].policy_number
-  add_provider_info
-  providers[0].provider_type
-  set_progress(56)
-  preferred_hospital
-  hospitals[0].address.address
+
+  nav.set_section("review_agent_info")
+  agent_intro
+  agent.gather()
+
+  nav.set_section("review_healthcare_info")
+  providers_intro
+  health_insurance_company
+  if healthcare_provider.there_are_any:
+    healthcare_provider.gather()
+  if hospital.there_are_any:
+    hospital.gather()
+  
+  nav.set_section("review_get_forms_info")
+
   interview_order_delegation_of_parental_authority = True
 ---
 ###################### Main order ######################
@@ -134,10 +132,45 @@ code: |
   other_parent[i].complete = True
 ---
 code: |
+  children[i].name.first
+  if children[i].has_allergies:
+    children[i].allergies
+  if children[i].has_med_conditions:
+    children[i].med_conditions
+  if children[i].takes_meds:
+    children[i].meds_taken
+  if children[i].cannot_take_meds:
+    children[i].meds_avoided
+  children[i].other_health_info
+  children[i].complete = True
+---
+code: |
+  agent[i].name.first
+  agent[i].address.address
+  agent[i].complete = True
+---
+code: |
   users.there_is_another = False
 ---
 code: |
   other_parent.there_is_another = False
+---
+code: |
+  agent.there_is_another = False
+---
+code: |
+  healthcare_provider[i].provider_type
+  healthcare_provider[i].name.first
+  healthcare_provider[i].address.address
+  healthcare_provider[i].complete = True
+---
+code: |
+  hospital[i].hospital_name
+  hospital[i].address.address
+  hospital[i].complete = True
+---
+code: |
+  hospital.there_is_another = False
 ---
 code: |
   dpa_end_choices = list() 
@@ -236,7 +269,7 @@ subquestion: |
   * deployed in a foreign country, or 
   * getting ready to deploy to a foreign country.
 fields:
-  - "Do you need this form for a military deployment?": military
+  - Do you need this form for a military deployment?: military
     datatype: yesnoradio
     label above field: True
   - note: |
@@ -310,72 +343,250 @@ content: |
 id: children number
 question: |
   Your children
+subquestion: |
+  ${ collapse_template(adding_children) }
 fields:
   - How many children will be included in your form?: children.target_number
     datatype: integer 
     min: 1
 ---
-id: Child Information
+template: adding_children
+subject: |
+  Do I need to include all my children in this form?
+content: |
+  Only include children who are under 18. If you have more than one child, you may include all of your children on this form, 
+  but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
+
+    * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
+
+    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
+---
+id: child name
+sets:
+  - children[i].name.first
+  - children[i].name.last
+  - children[i].name.middle
+  - children[i].name.suffix  
 question: |
-  Child Information
+  % if children.target_number > 1:
+  Enter your ${ordinal(i)} child's name
+  % else:
+  Enter your child's name
+  % endif
 fields:
-  - "Other Health Information": children[0].other_health_info
-    input type: area
-  - "Medications that can NOT be given": children[0].bad_meds
-  - "Allergies": children[0].allergies
-  - "Health conditions": children[0].health_conditions
-  - "Medications": children[0].medications
+  - code: |
+      children[i].name_fields()
+---
+id: child allergies
+sets:
+  - children[i].has_allergies
+question: |
+  ${ children[i].familiar() }'s health information
+fields: 
+  - Does ${ children[i].familiar() } have any allergies?: children[i].has_allergies
+    datatype: yesnoradio
+  - What allergies does ${ children[i].familiar() } have?: children[i].allergies
+    datatype: area 
+    show if:
+      variable: children[i].has_allergies
+      is: True
+---
+id: child medical conditions
+sets:
+  - children[i].has_medical_conditions
+question: |
+  ${ children[i].familiar() }'s health information
+fields: 
+  - Does ${ children[i].familiar() } have any medical conditions?: children[i].has_med_conditions
+    datatype: yesnoradio
+  - What medical conditions does ${ children[i].familiar() } have?: children[i].med_conditions
+    datatype: area 
+    show if:
+      variable: children[i].has_med_conditions
+      is: True
+---
+id: child medications taken
+sets:
+  - children[i].takes_meds
+question: |
+  ${ children[i].familiar() }'s health information
+fields: 
+  - Does ${ children[i].familiar() } take any medications?: children[i].takes_meds
+    datatype: yesnoradio
+  - What medications does ${ children[i].familiar() } take?: children[i].meds_taken
+    datatype: area 
+    show if:
+      variable: children[i].takes_meds
+      is: True
+---
+id: child medications avoided
+sets:
+  - children[i].cannot_take_meds
+question: |
+  ${ children[i].familiar() }'s health information
+fields: 
+  - Are there any medications ${ children[i].familiar() } **cannot** take?: children[i].cannot_take_meds
+    datatype: yesnoradio
+  - What medications can ${ children[i].familiar() } **not** take?: children[i].meds_avoided
+    datatype: area 
+    show if:
+      variable: children[i].cannot_take_meds
+      is: True
+---
+id: child other health info
+sets:
+  - children[i].other_health_info
+question: |
+  ${ children[i].familiar() }'s health information
+fields: 
+  - Is there any other health information you want your caregiver to know about ${ children[i].familiar() }?: children[i].other_health_info
+    datatype: area 
+    required: False
+---
+id: agent_intro
+question: |
+  Choosing an Agent
+subquestion: |
+  The form will give general power to an Agent that you name as a substitute parent. They will be allowed to do anything and everything required for your child's care. The form will specifically give them the power to:
+
+    * Consent to medical or dental care for your child
+
+    * Enroll your child in appropriate schools or educational programs
+
+    * Act or consent to any and all acts with respect to your child's health and well-being
+
+  The Agent will not have the power to agree to guardianship, adoption, or marriage of your child.
+continue button field: agent_intro
+---
+id: agent information
+sets:
+  - agent[i].name.first
+  - agent[i].name.last
+  - agent[i].name.middle
+  - agent[i].name.suffix
+  - agent[i].address.address
+  - agent[i].address.unit 
+  - agent[i].address.city
+  - agent[i].address.state 
+  - agent[i].address.zip  
+question: |
+  Your Children's Agent
+subquestion: |
+  Who do you want to name as your children's agent?
+fields:
+  - code: |
+      agent[i].name_fields()
+  - code: |
+      agent[i].address_fields()
+---
+id: providers intro
+question: |
+  Health care providers
+subquestion: |
+  The next few screens will ask about your children's health care providers and other information related to their health.
+
+  These questions are optional. However, completing this information could help the Agent know what to do for your children.
+  Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
+
+continue button field: providers_intro
+---
+id: health insurance info
+question: |
+  Health care providers
+subquestion: |
+  Enter your children's health insurance information.
+
+  This information is not required, but could help the care provider
+  if your children need medical attention.
+fields:
+  - Health insurance provider: health_insurance_company
+    required: False
+  - Member ID or Policy Number: health_insurance_id
+    required: False
+  - Group number: health_insurance_group
+    required: False
+validation code: |
+  if (defined('health_insurance_id') or defined('health_insurance_group')) and (not defined('health_insurance_company')):
+    validation_error("If you want to add health insurance details, you will need to include the provider's name")
 ---
 id: Add provider information
 question: |
-  Add provider information?
+  Health care providers
+subquestion: |
+  ${ collapse_template(providers_important_exp) }
 fields:
-  - "Want to add provider info?": add_provider_info
+  - Would you like your DPA to have the names and contact information of your children's health care providers?: healthcare_provider.there_are_any
     datatype: yesnoradio
 ---
-id: Provider information
+template: providers_important_exp
+subject: |
+  Why is it important to add health care providers?
+content: |
+  This information is optional, but can help the agent know who to call if your child needs medical attention.
+  If you enter the names of your children's pediatrician, dentist, or other health care providers,
+  the agent you chose will have important health care information in one place if they need it.
+---
+id: provider information
+sets:
+  - healthcare_provider[i].provider_type
+  - healthcare_provider[i].name.first
+  - healthcare_provider[i].name.last
+  - healthcare_provider[i].name.middle
+  - healthcare_provider[i].name.suffix
+  - healthcare_provider[i].address.address
+  - healthcare_provider[i].address.unit 
+  - healthcare_provider[i].address.city
+  - healthcare_provider[i].address.state 
+  - healthcare_provider[i].address.zip  
 question: |
-  Provider information
+  Health care providers
 fields:
-  - "Provider type": providers[0].provider_type
-    input type: radio
+  - Provider type: healthcare_provider[i].provider_type
     choices:
-      - Primary care physician/pediatrician
-      - Dentist
-      - Counselor
-      - Psychiatrist
-      - Other
-  - "Phone number": providers[0].phone_number
-  - "Provider Name": providers[0]
-  - "Provider address": providers[0].address.address
+      - Primary care physician/pediatrician: primary
+      - Dentist: dentist
+      - Counselor: counselor
+      - Psychiatrist: psychiatrist
+      - Other: other
+  - What type of provider is this?: healthcare_provider[i].provider_type_other
+    show if:
+      variable: healthcare_provider[i].provider_type
+      is: "other"
+  - code: |
+      healthcare_provider[i].name_fields()
+  - code: |
+      healthcare_provider[i].address_fields()
+  - Phone: healthcare_provider[i].phone_number
+    datatype: phone
 ---
-id: Do you have a preferred hospital
+id: provider there_is_another
 question: |
-  Do you have a preferred hospital?
+  Health care providers
 fields:
-  - "Preferred hospital": preferred_hospital
----
-id: Preferred hospital information
-question: |
-  Preferred hospital information
-fields:
-  - "Hospital's Address": hospitals[0].address.address
-  - "Hospital Name": hospitals[0]
----
-id: Do you want to add insurance information
-question: |
-  Do you want to add insurance information?
-fields:
-  - "Add insurance information?": include_insurance_info
+  - Do you want to add another health care provider?: healthcare_provider.there_is_another
     datatype: yesnoradio
 ---
-id: Insurance information
+id: hospital there_are_any
 question: |
-  Insurance information
+  Health care providers
 fields:
-  - "Policy Number or Member ID": insurance_companies[0].policy_number
-  - "Group Number": insurance_companies[0].group_number
-  - "Insurance Company Name": insurance_companies[0]
+  - Do you have a preference for which hospital your children go to in an emergency?: hospital.there_are_any
+    datatype: yesnoradio
+---
+id: hospital information
+sets:
+  - hospital[i].hospital_name
+  - hospital[i].address.address
+  - hospital[i].address.unit 
+  - hospital[i].address.city
+  - hospital[i].address.state 
+  - hospital[i].address.zip  
+question: |
+  Health care providers
+fields:
+  - Hospital name: hospital[i].hospital_name
+  - code: |
+      hospital[i].address_fields()
 ---
 id: preview delegation_of_parental_authority
 question: |
@@ -631,6 +842,4 @@ attachment:
   skip undefined: True
   docx template file: delegation_of_parental_authority.docx
   tagged pdf: True
-
-
-
+---
