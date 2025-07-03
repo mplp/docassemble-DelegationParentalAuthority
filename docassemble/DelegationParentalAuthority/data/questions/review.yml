@@ -1,4 +1,7 @@
 ---
+modules:
+  - docassemble.demo.accordion
+---
 id: delegation of parental authority review screen
 event: review_delegation_of_parental_authority
 question: |
@@ -137,7 +140,6 @@ edit:
   - medications
   - name.first
 confirm: True
-
 ---
 continue button field: caregivers.revisit
 question: |
@@ -158,7 +160,6 @@ edit:
   - name.first
   - address.address
 confirm: True
-
 ---
 continue button field: users.revisit
 question: |
