@@ -2,117 +2,213 @@
 modules:
   - docassemble.demo.accordion
 ---
+features:
+  css: docassemble.demo:data/static/accordion.css
+---
 id: delegation of parental authority review screen
-event: review_delegation_of_parental_authority
+event: review_full
 question: |
   Review your answers
 review:
-  - Edit: civilian_end_date
-    button: |
-      **Expiration date**:
-      ${ civilian_end_date }
-  - Edit: providers[0].provider_type
-    button: |
-      **Provider type**:
-      ${ providers[0].provider_type }
-  - Edit: preferred_hospital
-    button: |
-      **Preferred hospital**:
-      ${ preferred_hospital }
-  - Edit: insurance_companies[0].policy_number
-    button: |
-      **Policy Number or Member ID**:
-      ${ insurance_companies[0].policy_number }
-  - Edit: children.revisit
-    button: |
-      **Children**
+  - note: |
+      % if len(users.complete_elements()) > 0:
+      ${ review_accordion_explainer }
+      % else:
+      ${ review_empty_explainer }
+      % endif
+  - raw html: |
+      ${ start_accordion('<h2 class="h5">Parent Information</h2>') }
+    show if: len(users.complete_elements()) > 0
+  - Edit: 
+      - users[0].name.first
+    button: |-
+      **Your information:**
 
+      ${ users[0] }
+  - Edit: 
+      - military
+      - recompute:
+        - reset_dpa_start_stop
+        - gather_dpa_start_stop
+    button: |-
+      **Are you in the military?**
+
+      ${ word(yesno(military)) }
+  - Edit: 
+      - other_parent.there_are_any
+      - recompute:
+        - reset_other_parent
+    button: |-
+      **Will the other parent also sign this form?**
+
+      ${ word(yesno(other_parent.there_are_any)) }
+  - Edit: 
+      - other_parent[0].name.first
+    button: |-
+      **Other parent's information:**
+
+      ${ other_parent[0] }
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">DPA Start/End Date</h2>') }
+    show if: defined('dpa_start') or defined('dpa_end')
+  - Edit: 
+      - dpa_start
+    button: |-
+      **When should the DPA start?**
+
+      % if dpa_start == "different_date":
+      ${ dpa_start_date }
+      % else:
+      The date I sign it.
+      % endif
+  - Edit: 
+      - dpa_end
+    button: |-
+      **When should the DPA end?**
+
+      % if (dpa_end == "specific_date") or (dpa_end == "earlier_date"):
+      ${ dpa_end_date }
+      % elif dpa_end == "31_days_after_return":
+      31 days after I return from military deployment.
+      % elif dpa_end == "6_months_after_start":
+      6 months from the start date. 
+      % endif
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Children</h2>') }
+    show if: defined('children.target_number')
+  - note: |
+      % if len(children.complete_elements()) < 1:
+      *No children added yet.*
+      % endif
+    show if: defined('children.target_number')
+  - Edit: 
+      - children.revisit
+    button: |-
       % for item in children:
-        * ${ item }
-      % endfor
-  - Edit: military
-    button: |
-      **Military**:
-      ${ military }
-  - Edit: caregivers.revisit
-    button: |
-      **Caregivers**
 
-      % for item in caregivers:
-        * ${ item }
-      % endfor
-  - Edit: users.revisit
-    button: |
-      **Users**
+      **${ item }**
 
-      % for item in users:
-        * ${ item }
+      % if item.has_allergies:
+      * **Allergies**: ${ item.allergies }
+      % else:
+      * **Allergies**: *None listed*
+      % endif
+      % if item.has_med_conditions:
+      * **Medical Conditions**: ${ item.med_conditions }
+      % else:
+      * **Medical Conditions**: *None listed*
+      % endif
+      % if item.takes_meds:
+      * **Medications Taken**: ${ item.meds_taken }
+      % else:
+      * **Medications Taken**: *None listed*
+      % endif
+      % if item.cannot_take_meds:
+      * **Cannot Take the Following Medications**: ${ item.meds_avoided }
+      % else:
+      * **Cannot Take the Following Medications**: *None listed*
+      % endif
+      % if item.other_health_info != "":
+      * **Other Health Information**: ${ item.other_health_info }
+      % else:
+      * **Other Health Information**: *None listed*
+      % endif
+      [BR]
+      [BR]
       % endfor
-  - Edit: i_we
-    button: |
-      **I we**:
-      ${ i_we }
-  - Edit: insurance_companies[0].group_number
-    button: |
-      **Group Number**:
-      ${ insurance_companies[0].group_number }
-  - Edit: hospitals[0].address.address
-    button: |
-      **Hospital's Address**:
-      ${ hospitals[0].address.address.block() }
-  - Edit: military_end_date
-    button: |
-      **Expiration date**:
-      ${ military_end_date }
-  - Edit: child_or_children
-    button: |
-      **Child or children**:
-      ${ child_or_children }
-  - Edit: insurance_companies[0]
-    button: |
-      **Insurance Company Name**:
-      ${ insurance_companies[0] }
-  - Edit: my_our
-    button: |
-      **My our**:
-      ${ my_our }
-  - Edit: providers[0].phone_number
-    button: |
-      **Phone number**:
-      ${ providers[0].phone_number }
-  - Edit: providers[0]
-    button: |
-      **Provider Name**:
-      ${ providers[0] }
-  - Edit: end_date
-    button: |
-      **Expiration date**:
-      ${ end_date }
-  - Edit: providers[0].address.address
-    button: |
-      **Provider address**:
-      ${ providers[0].address.address.block() }
-  - Edit: effective_date
-    button: |
-      **Start Date**:
-      ${ effective_date }
-  - Edit: hospitals[0]
-    button: |
-      **Hospital Name**:
-      ${ hospitals[0] }
-  - Edit: add_provider_info
-    button: |
-      **Want to add provider info?**:
-      ${ add_provider_info }
-  - Edit: include_insurance_info
-    button: |
-      **Add insurance information?**:
-      ${ include_insurance_info }
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Agent</h2>') }
+    show if: len(agent.complete_elements()) > 0
+  - Edit: 
+      - agent[0].name.first
+      - agent[0].address.address
+    button: |-
+      **Agent's information:**
+
+      ${ agent[0] }
+
+      ${ agent[0].address }
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Health Care Providers</h2>') }
+    show if: defined('has_health_insurance_info')
+  - Edit: 
+      - has_health_insurance_info
+      - recompute:
+        - reset_health_insurance_info
+    button: |-
+      **Do you want to include your children's health insurance information?**
+
+      ${ word(yesno(has_health_insurance_info)) }
+  - Edit: 
+      - health_insurance_company
+    button: |-
+      **Health insurance provider:** ${ health_insurance_company }
+      % if defined('health_insurance_id'):
+      **Member ID or Policy Number:** ${ health_insurance_id }
+      % else:
+      **Member ID or Policy Number:** *None listed*
+      % endif
+      % if defined('health_insurance_group'):
+      **Group Number:** ${ health_insurance_group }
+      % else:
+      **Group Number:** *None listed*
+      % endif
+  - Edit: 
+      - healthcare_provider.there_are_any
+      - recompute:
+        - reset_healthcare_providers
+    button: |-
+      **Do you want to include your children's health care providers' information?**
+
+      ${ word(yesno(healthcare_provider.there_are_any)) }
+  - Edit: 
+      - healthcare_provider.revisit
+    button: |-
+      % for item in healthcare_provider:
+
+      **${ item.name }**
+
+      % if item.provider_type == "other":
+      * **Type**: ${ capitalize(item.provider_type_other) }
+      % elif item.provider_type == "primary":
+      * **Type**: Primary care/pediatrician
+      % elif item.provider_type == "dentist":
+      * **Type**: Dentist
+      % elif item.provider_type == "counselor":
+      * **Type**: Counselor
+      % elif item.provider_type == "psychiatrist":
+      * **Type**: Psychiatrist
+      % endif
+      * **Address**: ${ item.address.on_one_line() }
+      * **Phone**: ${ phone_number_formatted(item.phone_number) }
+      [BR]
+      [BR]
+      % endfor
+  - Edit: 
+      - hospital.there_are_any
+      - recompute:
+        - reset_hospital
+    button: |-
+      **Do you have a preference for which hospital your children go to in an emergency?**
+
+      ${ word(yesno(hospital.there_are_any)) }
+  - Edit: 
+      - hospital[0].hospital_name
+      - hospital[0].address
+    button: |-
+      **Preferred Hospital:** ${ hospital[0].hospital_name }
+
+      **Address:** ${ hospital[0].on_one_line() }
+  - raw html: |
+      ${ end_accordion() }
+    show if: len(users.complete_elements()) > 0
 ---
 continue button field: children.revisit
 question: |
   Edit children
 subquestion: |
+  To make changes to your child's name, allergies, health conditions, medications, or other health information, click the **Edit** button next to their name.
+
   ${ children.table }
 
   ${ children.add_action() }
@@ -120,45 +216,15 @@ subquestion: |
 table: children.table
 rows: children
 columns:
-  - Other health info: |
-      row_item.other_health_info if defined("row_item.other_health_info") else ""
-  - Bad meds: |
-      row_item.bad_meds if defined("row_item.bad_meds") else ""
-  - Allergies: |
-      row_item.allergies if defined("row_item.allergies") else ""
-  - Health conditions: |
-      row_item.health_conditions if defined("row_item.health_conditions") else ""
-  - Medications: |
-      row_item.medications if defined("row_item.medications") else ""
   - Name: |
       row_item.name.full() if defined("row_item.name.first") else ""
 edit:
-  - other_health_info
-  - bad_meds
+  - name.first
   - allergies
-  - health_conditions
-  - medications
-  - name.first
-confirm: True
----
-continue button field: caregivers.revisit
-question: |
-  Edit caregivers
-subquestion: |
-  ${ caregivers.table }
-
-  ${ caregivers.add_action() }
----
-table: caregivers.table
-rows: caregivers
-columns:
-  - Name: |
-      row_item.name.full() if defined("row_item.name.first") else ""
-  - Address: |
-      row_item.address.block() if defined("row_item.address.address") else ""
-edit:
-  - name.first
-  - address.address
+  - med_conditions
+  - meds_taken
+  - meds_avoided
+  - other_health_info
 confirm: True
 ---
 continue button field: users.revisit
@@ -176,5 +242,31 @@ columns:
       row_item.name.full() if defined("row_item.name.first") else ""
 edit:
   - name.first
+confirm: True
+---
+continue button field: healthcare_provider.revisit
+question: |
+  Edit health care providers
+subquestion: |
+  ${ healthcare_provider.table }
+
+  ${ healthcare_provider.add_action() }
+---
+table: healthcare_provider.table
+rows: healthcare_provider
+columns:
+  - Type: |
+      capitalize(row_item.provider_type_other) if defined("row_item.provider_type_other") else capitalize(row_item.provider_type)
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.on_one_line() if defined("row_item.address") else ""
+  - Phone: |
+      phone_number_formatted(row_item.phone_number) if defined("row_item.phone_number") else ""
+edit:
+  - provider_type
+  - name.first
+  - address.address
+  - phone_number
 confirm: True
 ---

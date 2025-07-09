@@ -65,13 +65,11 @@ objects:
   - healthcare_provider: ALPeopleList.using(complete_attribute="complete")
   - hospital: ALAddressList.using(complete_attribute="complete")
 ---
-sections:
-  - review_delegation_of_parental_authority: Review your answers
----
 #################### Interview order #####################
 id: interview_order_delegation_of_parental_authority
 mandatory: True
 code: |
+  snapshot_start
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
   al_intro_screen
@@ -101,7 +99,8 @@ code: |
 
   nav.set_section("review_healthcare_info")
   providers_intro
-  health_insurance_company
+  if has_health_insurance_info:
+    health_insurance_company
   if healthcare_provider.there_are_any:
     healthcare_provider.gather()
   if hospital.there_are_any:
@@ -177,6 +176,49 @@ code: |
     dpa_end_choices.append({'6_months_after_start':'6 months from the date it starts'})
     dpa_end_choices.append({'earlier_date':'On an earlier date'})
 ---
+code: |
+  if not healthcare_provider.there_are_any:
+    healthcare_provider.clear()
+
+  reset_healthcare_providers = True
+---
+code: |
+  if not other_parent.there_are_any:
+    other_parent.clear()
+
+  reset_other_parent = True
+---
+code: |
+  if not has_health_insurance_info:
+    undefine('health_insurance_company')
+    undefine('health_insurance_id')
+    undefine('health_insurance_group')
+
+  reset_health_insurance_info = True
+---
+code: |
+  if not hospital.there_are_any:
+    hospital.clear()
+
+  reset_hospital = True
+---
+code: |
+  undefine('dpa_start')
+  undefine('dpa_start_date')
+  undefine('dpa_end')
+  undefine('dpa_end_date')
+
+  reset_dpa_start_stop = True
+---
+code: |
+  if military:
+    dpa_end
+  else:
+    dpa_start
+    dpa_end
+
+  gather_dpa_start_stop = True
+---
 ###################### Questions Start ######################
 ---
 comment: |
@@ -219,18 +261,18 @@ sets:
   - users[i].name.middle
   - users[i].name.suffix    
 question: |
-  Enter your name
+  Your Information
 fields:
   - code: |
       users[i].name_fields()
 ---
 id: other_parent there_are_any
 question: |
-  Other parent
+  The Other Parent
 subquestion: |
   ${ collapse_template(other_parent_explanation) }
 fields:
-  - Will your child(ren)'s other parent also sign this form?: other_parent.there_are_any
+  - Will your children's **other parent** also sign this form?: other_parent.there_are_any
     datatype: yesnoradio
 ---
 id: other_parent information
@@ -240,7 +282,9 @@ sets:
   - other_parent[i].name.middle
   - other_parent[i].name.suffix    
 question: |
-  Enter the other parent's information
+  The Other Parent
+subquestion: |
+  Enter the other parent's information.
 fields:
   - code: |
       other_parent[i].name_fields()
@@ -258,23 +302,23 @@ content: |
 ---
 id: Are you in the military?
 question: | 
-  Are you in the military?
+  Military Service
 subquestion: |
-  Some service members use a Delegation of Parental Authority because they are:
-  
-  * deployed in a foreign country, or 
-  * getting ready to deploy to a foreign country.
+  ${ collapse_template(why_ask_military) }
 fields:
   - Do you need this form for a military deployment?: military
     datatype: yesnoradio
     label above field: True
-  - note: |
-      ${ collapse_template(why_ask_military) }
 ---
 template: why_ask_military
 subject: |
   How is military service related to this form?
 content: |
+  Some service members use a Delegation of Parental Authority because they are:
+  
+  * deployed in a foreign country, **or** 
+  * getting ready to deploy to a foreign country.
+
   In most cases, a Delegation of Parental Authority (DPA) can only be in place for 6 months. However, if you are a service member deployed in a foreign country, a DPA can be in place during your entire deployment, plus 31 days after you return.
 ---
 id: dpa duration intro
@@ -299,9 +343,9 @@ continue button field: dpa_duration_intro
 ---
 id: DPA start
 question: |
-  DPA Start
+  DPA Duration 
 fields:
-  - When should the DPA start?: dpa_start
+  - When should the DPA **start**?: dpa_start
     datatype: radio
     choices:
       - The date I sign it: date_signed
@@ -315,13 +359,13 @@ fields:
 reconsider: dpa_end_choices
 id: DPA end
 question: |
-  DPA End
+  DPA Duration 
 subquestion: |
   % if not military:
   ${ collapse_template(dpa_end_change) }
   % endif
 fields:
-  - When should the DPA end?: dpa_end
+  - When should the DPA **end**?: dpa_end
     datatype: radio
     code: |
       dpa_end_choices
@@ -338,7 +382,7 @@ content: |
 ---
 id: children number
 question: |
-  Your children
+  Your Children
 subquestion: |
   ${ collapse_template(adding_children) }
 fields:
@@ -354,7 +398,6 @@ content: |
   but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
 
     * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
-
     * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
 ---
 id: child name
@@ -362,10 +405,12 @@ sets:
   - children[i].name.first
   - children[i].name.last
   - children[i].name.middle
-  - children[i].name.suffix  
+  - children[i].name.suffix
 question: |
+  Your Children  
+subquestion: |
   % if children.target_number > 1:
-  Enter your ${ordinal(i)} child's name
+  Enter your **${ordinal(i)}** child's name
   % else:
   Enter your child's name
   % endif
@@ -377,7 +422,7 @@ id: child allergies
 sets:
   - children[i].has_allergies
 question: |
-  ${ children[i].familiar() }'s health information
+    Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any allergies?: children[i].has_allergies
     datatype: yesnoradio
@@ -391,7 +436,7 @@ id: child medical conditions
 sets:
   - children[i].has_medical_conditions
 question: |
-  ${ children[i].familiar() }'s health information
+    Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any medical conditions?: children[i].has_med_conditions
     datatype: yesnoradio
@@ -405,7 +450,7 @@ id: child medications taken
 sets:
   - children[i].takes_meds
 question: |
-  ${ children[i].familiar() }'s health information
+    Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } take any medications?: children[i].takes_meds
     datatype: yesnoradio
@@ -419,7 +464,7 @@ id: child medications avoided
 sets:
   - children[i].cannot_take_meds
 question: |
-  ${ children[i].familiar() }'s health information
+    Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Are there any medications ${ children[i].familiar() } **cannot** take?: children[i].cannot_take_meds
     datatype: yesnoradio
@@ -433,7 +478,7 @@ id: child other health info
 sets:
   - children[i].other_health_info
 question: |
-  ${ children[i].familiar() }'s health information
+    Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Is there any other health information you want your caregiver to know about ${ children[i].familiar() }?: children[i].other_health_info
     datatype: area 
@@ -441,17 +486,15 @@ fields:
 ---
 id: agent_intro
 question: |
-  Choosing an Agent
+  Your Children's Agent
 subquestion: |
-  The form will give general power to an Agent that you name as a substitute parent. They will be allowed to do anything and everything required for your child's care. The form will specifically give them the power to:
+  The form will give general power to an Agent that you name as a substitute parent. They will be allowed to do anything and everything required for your children's care. The form will specifically give them the power to:
 
-    * Consent to medical or dental care for your child
+    * Consent to medical or dental care for your children.
+    * Enroll your children in appropriate schools or educational programs.
+    * Act or consent to any and all acts with respect to your children's health and well-being.
 
-    * Enroll your child in appropriate schools or educational programs
-
-    * Act or consent to any and all acts with respect to your child's health and well-being
-
-  The Agent will not have the power to agree to guardianship, adoption, or marriage of your child.
+  The Agent will **not** have the power to agree to guardianship, adoption, or marriage of your children.
 continue button field: agent_intro
 ---
 id: agent information
@@ -477,23 +520,27 @@ fields:
 ---
 id: providers intro
 question: |
-  Health care providers
+  Health Care Providers
 subquestion: |
-  The next few screens will ask about your children's health care providers and other information related to their health.
+  The next few screens will ask about your children's health care providers.
 
-  These questions are optional. However, completing this information could help the Agent know what to do for your children.
+  **These questions are optional**. However, completing this information could help the Agent know what to do for your children.
   Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
 
 continue button field: providers_intro
 ---
+id: wants health insurance info
+question: |
+  Health Care Providers
+fields:
+  - Do you want to add your children's **health insurance** information?: has_health_insurance_info
+    datatype: yesnoradio
+---
 id: health insurance info
 question: |
-  Health care providers
+  Health Care Providers
 subquestion: |
-  Enter your children's health insurance information.
-
-  This information is not required, but could help the care provider
-  if your children need medical attention.
+  Enter your children's **health insurance** information.
 fields:
   - Health insurance provider: health_insurance_company
     required: False
@@ -507,11 +554,11 @@ validation code: |
 ---
 id: Add provider information
 question: |
-  Health care providers
+  Health Care Providers
 subquestion: |
   ${ collapse_template(providers_important_exp) }
 fields:
-  - Would you like your DPA to have the names and contact information of your children's health care providers?: healthcare_provider.there_are_any
+  - Do you want to add the names and contact information of your children's **health care providers**?: healthcare_provider.there_are_any
     datatype: yesnoradio
 ---
 template: providers_important_exp
@@ -535,7 +582,13 @@ sets:
   - healthcare_provider[i].address.state 
   - healthcare_provider[i].address.zip  
 question: |
-  Health care providers
+  Health Care Providers
+subquestion: |
+  % if len(healthcare_provider.complete_elements()) < 1:
+  Enter the provider's information.
+  % else:
+  Enter the ${ordinal(i)} provider's information.
+  % endif
 fields:
   - Provider type: healthcare_provider[i].provider_type
     choices:
@@ -557,16 +610,16 @@ fields:
 ---
 id: provider there_is_another
 question: |
-  Health care providers
+  Health Care Providers
 fields:
-  - Do you want to add another health care provider?: healthcare_provider.there_is_another
+  - Do you want to add another **health care provider**?: healthcare_provider.there_is_another
     datatype: yesnoradio
 ---
 id: hospital there_are_any
 question: |
-  Health care providers
+  Health Care Providers
 fields:
-  - Do you have a preference for which hospital your children go to in an emergency?: hospital.there_are_any
+  - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
 ---
 id: hospital information
@@ -578,7 +631,7 @@ sets:
   - hospital[i].state 
   - hospital[i].zip  
 question: |
-  Health care providers
+  Health Care Providers
 fields:
   - Hospital name: hospital[i].hospital_name
   - code: |
@@ -590,15 +643,15 @@ question: |
 subquestion: |
   Here is a preview of the form you will sign on the next page.   
   
-  ${ al_recipient_bundle.as_pdf(key='preview') }
+  ${ al_user_bundle.as_pdf(key='preview') }
 
   Click the image to open it in a new tab. Click the "Edit answers" button
   to edit your answers.
 
-  ${ action_button_html(url_action('review_delegation_of_parental_authority'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_full'), label='Edit answers', color='info') }
   
   Remember to come back to this window to continue and sign your form.
-continue button field: delegation_of_parental_authority_preview_question
+continue button field: preview_question
 ---
 id: patience download
 continue button field: have_patience_download
