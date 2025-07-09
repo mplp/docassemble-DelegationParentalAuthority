@@ -142,17 +142,20 @@ review:
   - Edit: 
       - health_insurance_company
     button: |-
-      **Health insurance provider:** ${ health_insurance_company }
+      **Health Insurance Provider:** 
+      
+      * **Carrier**: ${ health_insurance_company }
       % if defined('health_insurance_id'):
-      **Member ID or Policy Number:** ${ health_insurance_id }
+      * **Member ID or Policy Number:** ${ health_insurance_id }
       % else:
-      **Member ID or Policy Number:** *None listed*
+      * **Member ID or Policy Number:** *None listed*
       % endif
       % if defined('health_insurance_group'):
-      **Group Number:** ${ health_insurance_group }
+      * **Group Number:** ${ health_insurance_group }
       % else:
-      **Group Number:** *None listed*
+      * **Group Number:** *None listed*
       % endif
+    show if: has_health_insurance_info
   - Edit: 
       - healthcare_provider.there_are_any
       - recompute:
@@ -164,10 +167,10 @@ review:
   - Edit: 
       - healthcare_provider.revisit
     button: |-
+      **Healthcare Providers:**
       % for item in healthcare_provider:
 
-      **${ item.name }**
-
+      * **Name:** ${ item.name }
       % if item.provider_type == "other":
       * **Type**: ${ capitalize(item.provider_type_other) }
       % elif item.provider_type == "primary":
@@ -181,9 +184,12 @@ review:
       % endif
       * **Address**: ${ item.address.on_one_line() }
       * **Phone**: ${ phone_number_formatted(item.phone_number) }
+      % if len(healthcare_provider.complete_elements()) > 1:
       [BR]
       [BR]
+      % endif
       % endfor
+    show if: healthcare_provider.there_are_any
   - Edit: 
       - hospital.there_are_any
       - recompute:
@@ -196,9 +202,11 @@ review:
       - hospital[0].hospital_name
       - hospital[0].address
     button: |-
-      **Preferred Hospital:** ${ hospital[0].hospital_name }
-
-      **Address:** ${ hospital[0].on_one_line() }
+      **Preferred Hospital:** 
+      
+      * **Name**: ${ hospital[0].hospital_name }
+      * **Address:** ${ hospital[0].on_one_line() }
+    show if: hospital.there_are_any
   - raw html: |
       ${ end_accordion() }
     show if: len(users.complete_elements()) > 0
