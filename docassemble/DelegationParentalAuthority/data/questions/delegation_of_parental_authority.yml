@@ -544,7 +544,7 @@ subquestion: |
 fields:
   - Health insurance provider: health_insurance_company
     required: False
-  - Member ID or Policy Number: health_insurance_id
+  - Member ID or policy number: health_insurance_id
     required: False
   - Group number: health_insurance_group
     required: False
@@ -611,9 +611,25 @@ fields:
 id: provider there_is_another
 question: |
   Health Care Providers
+subquestion: |
+  ${ collapse_template(healthcare_provider_list) }
 fields:
   - Do you want to add another **health care provider**?: healthcare_provider.there_is_another
     datatype: yesnoradio
+---
+template: healthcare_provider_list
+subject: Which healthcare providers have I listed so far?
+content: |
+  % if len(healthcare_provider.complete_elements()) > 0:
+  So far, you've added the following other providers:
+
+  % for item in healthcare_provider:
+    * ${ item.name } (${ capitalize(item.provider_type) })
+  
+  % endfor
+  % else:
+  You haven't added any providers.
+  % endif
 ---
 id: hospital there_are_any
 question: |
