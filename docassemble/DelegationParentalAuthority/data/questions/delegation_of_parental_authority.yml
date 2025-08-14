@@ -75,6 +75,8 @@ code: |
   al_intro_screen
   delegation_of_parental_authority_intro
   do_not_use_for
+  MLH_agree_terms
+  MLH_intro_navigate_save
 
   nav.set_section("review_parent_info")
   users.gather()
