@@ -226,11 +226,11 @@ question: |
 subquestion: |
   Welcome to the ${ MLH_interview_short_title } tool. 
   
-  This tool will help you prepare the forms you will need to give someone besides you (or your children's other parent) temporary legal power to make decisions for your children. 
+  This tool will help you prepare a form to give someone besides you (or your children's other parent) temporary legal power to make decisions for your children. 
   
   ${ collapse_template(process_info) }
   
-  Most people take about **15-30 minutes** to finish this interview. 
+  It usually takes about 15-30 minutes to answer all the questions and get your form.
   
   When you are finished, you will need need to **print and sign** this form to make it effective.
 
