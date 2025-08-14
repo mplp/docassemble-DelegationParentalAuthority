@@ -398,7 +398,7 @@ content: |
   but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
 
     * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
-    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
+    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each form will list one child and one caretaker.
 ---
 id: child name
 sets:
@@ -479,10 +479,31 @@ sets:
   - children[i].other_health_info
 question: |
     Your Children: ${ children[i].familiar() }'s health information
+subquestion: |
+  ${ collapse_template(other_health_info_exp) }
 fields: 
   - Is there any other health information you want your caregiver to know about ${ children[i].familiar() }?: children[i].other_health_info
     datatype: area 
     required: False
+---
+template: other_health_info_exp
+subject: |
+  What should I include?
+content: |
+  You should provide any **other information** that could help someone take care of your child.
+
+  This might include things like additional instructions on how give your child their medication or help them with a medical device.
+  
+  Here is an example:
+
+  *My child uses an albuterol inhaler (0.042% strength) to manage his moderate asthma attacks.
+  [BR]
+  [BR]
+  In case of an asthma attack, he should sit or stand straight while using the inhaler. He should inhale for 3-4 seconds
+  while pressing the inhaler, hold his breath for 30 seconds, and then exhale slowly.
+  [BR]
+  [BR]
+  If an asthma attack does not improve within 30 minutes, he should be taken to the nearest doctor or emergency room.*
 ---
 id: agent_intro
 question: |
