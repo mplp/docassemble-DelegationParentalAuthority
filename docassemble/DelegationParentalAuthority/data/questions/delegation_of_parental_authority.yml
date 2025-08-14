@@ -24,6 +24,13 @@ metadata:
   al_weaver_version: "1.10.3"
   generated_on: "2023-11-21"
 ---
+code: |
+  resource_page_url_only = "https://michiganlegalhelp.org/node/10284"
+
+  resource_page_name = "Giving Someone Else Parental Authority over Your Child (Short-Term Parental Power of Attorney)"
+
+  survey_link_url_only = "https://www.surveymonkey.com/r/S3NGDPG"
+---
 features:
   labels above fields: True
 ---
@@ -220,6 +227,12 @@ code: |
   gather_dpa_start_stop = True
 ---
 ###################### Questions Start ######################
+---
+template: survey_embed_script
+content: |
+  <script>
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdzxwuSQVZA5gS55pIr4pOSbT9azdCJQBwYqlnbYVzNve.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
+  </script>
 ---
 comment: |
   This question is used to introduce your interview. Please customize
