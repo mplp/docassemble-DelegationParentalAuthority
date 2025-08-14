@@ -72,7 +72,7 @@ code: |
   snapshot_start
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
-  MLH_intro_landing
+  DPA_intro_landing
   do_not_use_for
 
   nav.set_section("review_parent_info")
@@ -220,7 +220,7 @@ code: |
 ---
 ###################### Questions Start ######################
 ---
-id: MLH intro landing FirstScreen
+id: DPA intro landing FirstScreen
 question: |
   Delegation of Parental Authority
 subquestion: |
@@ -234,7 +234,7 @@ subquestion: |
   
   When you are finished, you will need need to **print and sign** this form to make it effective.
 
-continue button field: MLH_intro_landing
+continue button field: DPA_intro_landing
 ---
 template: process_info
 subject: |
