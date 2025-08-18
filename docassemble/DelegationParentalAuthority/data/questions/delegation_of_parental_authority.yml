@@ -88,13 +88,13 @@ code: |
     dpa_start
   dpa_end
 
-  nav.set_section("review_children_info")
-  children.target_number
-  children.gather()
-
   nav.set_section("review_agent_info")
   agent_intro
   agent.gather()
+
+  nav.set_section("review_children_info")
+  children.target_number
+  children.gather()
 
   nav.set_section("review_healthcare_info")
   providers_intro
@@ -403,11 +403,22 @@ template: adding_children
 subject: |
   Do I need to include all my children in this form?
 content: |
-  Only include children who are under 18. If you have more than one child, you may include all of your children on this form, 
-  but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
+  Only include children who are: 
 
-    * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
-    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
+    * Under the age of 18. 
+    * Staying with the caregiver you named for **this form**. 
+  
+  **Note:** If you have children that will stay with different caregivers, you will need a **separate form for each caregiver**.
+---
+template: naming_different_agents
+subject: |
+  What if I want to name different agents for different children?
+content: |
+  If you have children that will stay with different caregivers, you will need a separate form for each caregiver. 
+  
+  For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms.
+
+  Please use this tool **one** time for **each caregiver**.
 ---
 id: child name
 sets:
@@ -504,6 +515,8 @@ subquestion: |
     * Act or consent to any and all acts with respect to your children's health and well-being.
 
   The Agent will **not** have the power to agree to guardianship, adoption, or marriage of your children.
+
+  ${ collapse_template(naming_different_agents) }
 continue button field: agent_intro
 ---
 id: agent information
@@ -520,6 +533,8 @@ sets:
 question: |
   Your Children's Agent
 subquestion: |
+  ${ collapse_template(naming_different_agents) }
+
   Who do you want to name as your children's agent?
 fields:
   - code: |
