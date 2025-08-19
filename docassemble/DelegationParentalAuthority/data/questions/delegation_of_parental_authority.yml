@@ -410,7 +410,7 @@ content: |
   but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
 
     * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
-    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
+    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each form will list one child and one caretaker.
 ---
 id: child name
 sets:
@@ -504,7 +504,7 @@ subquestion: |
 
     * Consent to medical or dental care for your children.
     * Enroll your children in appropriate schools or educational programs.
-    * Act or consent to any and all acts with respect to your children's health and well-being.
+    * Act or consent to any and all acts involving your children's health or well-being
 
   The Agent will **not** have the power to agree to guardianship, adoption, or marriage of your children.
 continue button field: agent_intro
