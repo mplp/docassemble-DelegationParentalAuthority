@@ -74,6 +74,8 @@ code: |
   nav.set_section("signpost_intro")
   DPA_intro_landing
   do_not_use_for
+  MLH_agree_terms
+  MLH_intro_navigate_save
 
   nav.set_section("review_parent_info")
   users.gather()
