@@ -406,7 +406,7 @@ content: |
   Only include children who are: 
 
     * Under the age of 18. 
-    * Staying with the caregiver you named for **this form**. 
+    * Going to stay with ${ agent[0] }.
   
   **Note:** If you have children that will stay with different caregivers, you will need a **separate form for each caregiver**.
 ---
@@ -418,7 +418,7 @@ content: |
   
   For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms.
 
-  Please use this tool **one** time for **each caregiver**.
+  Please use this tool one time for **each caregiver**.
 ---
 id: child name
 sets:
