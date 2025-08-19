@@ -230,7 +230,7 @@ subquestion: |
   
   ${ collapse_template(process_info) }
   
-  It usually takes about 15-30 minutes to answer all the questions and get your form.
+  It usually takes about **15-30 minutes** to answer all the questions and get your form.
   
   When you are finished, you will need need to **print and sign** this form to make it effective.
 
