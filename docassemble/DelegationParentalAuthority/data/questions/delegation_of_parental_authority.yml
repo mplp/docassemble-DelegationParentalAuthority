@@ -8,7 +8,7 @@ metadata:
   title: >-
     Delegation of Parental Authority
   short title: >-
-    Temporary parental powers
+    Delegation of Parental Authority
   description: |-
     This interview helps someone in Michigan make a Delegation of Parental Authority.
   tags: []
@@ -79,9 +79,10 @@ code: |
   snapshot_start
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
-  al_intro_screen
-  delegation_of_parental_authority_intro
+  DPA_intro_landing
   do_not_use_for
+  MLH_agree_terms
+  MLH_intro_navigate_save
 
   nav.set_section("review_parent_info")
   users.gather()
@@ -96,13 +97,13 @@ code: |
     dpa_start
   dpa_end
 
-  nav.set_section("review_children_info")
-  children.target_number
-  children.gather()
-
   nav.set_section("review_agent_info")
   agent_intro
   agent.gather()
+
+  nav.set_section("review_children_info")
+  children.target_number
+  children.gather()
 
   nav.set_section("review_healthcare_info")
   providers_intro
@@ -241,20 +242,33 @@ continue button field: delegation_of_parental_authority_intro
 question: |
   Delegation of Parental Authority
 subquestion: |
-  This interview will help you make a Delegation of Parental Authority and a set of step-by-step instructions.
+  Welcome to the ${ MLH_interview_short_title } tool. 
   
+  This tool will help you prepare a form to give someone besides you (or your children's other parent) temporary legal power to make decisions for your children. 
+  
+  ${ collapse_template(process_info) }
+  
+  It usually takes about **15-30 minutes** to answer all the questions and get your form.
+  
+  When you are finished, you will need need to **print and sign** this form to make it effective.
+
+continue button field: DPA_intro_landing
+---
+template: process_info
+subject: |
+  What information will I need to use this tool?
+content: |
   Before you get started, please gather:
   
   1. Contact information for the person you want to give parental authority to.
-  2. **Optional**: Your children's health care information, including:
-    
-  * allergies
-  * medications
-  * insurance
-  * providers
-  * preferred hospital
-  
-  Most people take about 15-30 minutes to finish this interview. When you are finished, you need to print and sign this form to make it effective.
+  2. (Optional) Your children's health care information, including:
+      * allergies
+      * medications
+      * insurance
+      * providers
+      * preferred hospital
+
+  To learn more about getting a Delegation of Parental Authority, read [Giving Someone Temporary Legal Power to Make Decisions for Your Child](https://michiganlegalhelp.org/resources/family/giving-someone-temporary-legal-power-make-decisions-your-child).
 ---
 id: Do Not Use Warnings
 continue button field: do_not_use_for
@@ -402,16 +416,28 @@ fields:
   - How many children will be included in your form?: children.target_number
     datatype: integer 
     min: 1
+    max: 20
 ---
 template: adding_children
 subject: |
   Do I need to include all my children in this form?
 content: |
-  Only include children who are under 18. If you have more than one child, you may include all of your children on this form, 
-  but you are not required to include all of your children. Some examples of reasons that you may not include all of your children are:
+  Only include children who are: 
 
-    * You have multiple children, but one child is staying with a relative for a few weeks. You may create a form for only that child.
-    * If you have children that will stay with different caretakers, you will need a separate form for each caretaker. For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms. Each for will list one child and one caretaker.
+    * Under the age of 18. 
+    * Going to stay with ${ agent[0] }.
+  
+  **Note:** If you have children that will stay with different caregivers, you will need a **separate form for each caregiver**.
+---
+template: naming_different_agents
+subject: |
+  What if I want to name different agents for different children?
+content: |
+  If you have children that will stay with different caregivers, you will need a separate form for each caregiver. 
+  
+  For example, if one child will stay with your mother and one child will stay with your friend, you will need two forms.
+
+  Please use this tool one time for **each caregiver**.
 ---
 id: child name
 sets:
@@ -505,9 +531,11 @@ subquestion: |
 
     * Consent to medical or dental care for your children.
     * Enroll your children in appropriate schools or educational programs.
-    * Act or consent to any and all acts with respect to your children's health and well-being.
+    * Act or consent to any and all acts involving your children's health or well-being
 
   The Agent will **not** have the power to agree to guardianship, adoption, or marriage of your children.
+
+  ${ collapse_template(naming_different_agents) }
 continue button field: agent_intro
 ---
 id: agent information
@@ -524,6 +552,8 @@ sets:
 question: |
   Your Children's Agent
 subquestion: |
+  ${ collapse_template(naming_different_agents) }
+
   Who do you want to name as your children's agent?
 fields:
   - code: |
