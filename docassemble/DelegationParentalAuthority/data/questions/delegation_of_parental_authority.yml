@@ -74,6 +74,8 @@ code: |
   nav.set_section("signpost_intro")
   DPA_intro_landing
   do_not_use_for
+  MLH_agree_terms
+  MLH_intro_navigate_save
 
   nav.set_section("review_parent_info")
   users.gather()
@@ -226,11 +228,11 @@ question: |
 subquestion: |
   Welcome to the ${ MLH_interview_short_title } tool. 
   
-  This tool will help you prepare the forms you will need to give someone besides you (or your children's other parent) temporary legal power to make decisions for your children. 
+  This tool will help you prepare a form to give someone besides you (or your children's other parent) temporary legal power to make decisions for your children. 
   
   ${ collapse_template(process_info) }
   
-  Most people take about **15-30 minutes** to finish this interview. 
+  It usually takes about **15-30 minutes** to answer all the questions and get your form.
   
   When you are finished, you will need need to **print and sign** this form to make it effective.
 
@@ -398,6 +400,7 @@ fields:
   - How many children will be included in your form?: children.target_number
     datatype: integer 
     min: 1
+    max: 20
 ---
 template: adding_children
 subject: |
@@ -512,7 +515,7 @@ subquestion: |
 
     * Consent to medical or dental care for your children.
     * Enroll your children in appropriate schools or educational programs.
-    * Act or consent to any and all acts with respect to your children's health and well-being.
+    * Act or consent to any and all acts involving your children's health or well-being
 
   The Agent will **not** have the power to agree to guardianship, adoption, or marriage of your children.
 
