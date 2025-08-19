@@ -400,6 +400,7 @@ fields:
   - How many children will be included in your form?: children.target_number
     datatype: integer 
     min: 1
+    max: 20
 ---
 template: adding_children
 subject: |
