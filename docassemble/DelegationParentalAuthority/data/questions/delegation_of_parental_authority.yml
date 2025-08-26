@@ -224,9 +224,14 @@ code: |
 code: |
   if len(healthcare_provider.complete_elements()) > 0:
     for provider in healthcare_provider:
+
       for child_treated in provider.children_treated:
+      
         if child_treated not in children:
           provider.children_treated.remove(child_treated)
+
+      if len(provider.children_treated) < 1:
+        healthcare_provider.remove(provider)
 
   update_providers = True
 ---
