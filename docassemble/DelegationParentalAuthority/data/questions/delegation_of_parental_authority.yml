@@ -64,7 +64,6 @@ objects:
   - agent: ALPeopleList.using(there_are_any=True, complete_attribute="complete")
   - healthcare_provider: ALPeopleList.using(complete_attribute="complete")
   - hospital: ALAddressList.using(complete_attribute="complete")
-  - children_choices: DASet.using(auto_gather=False)
 ---
 #################### Interview order #####################
 id: interview_order_delegation_of_parental_authority
@@ -226,7 +225,7 @@ code: |
     for provider in healthcare_provider:
 
       for child_treated in provider.children_treated:
-      
+
         if child_treated not in children:
           provider.children_treated.remove(child_treated)
 
@@ -624,8 +623,6 @@ content: |
   the agent you chose will have important health care information in one place if they need it.
 ---
 id: provider information
-reconsider:
-  - children_choices
 sets:
   - healthcare_provider[i].provider_type
   - healthcare_provider[i].name.first
