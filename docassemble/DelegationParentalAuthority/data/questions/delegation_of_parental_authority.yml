@@ -496,14 +496,11 @@ content: |
   
   Here is an example:
 
-  *My child uses an albuterol inhaler (0.042% strength) to manage his moderate asthma attacks.
+  *My child uses an albuterol inhaler to manage asthma attacks. 
   [BR]
   [BR]
-  In case of an asthma attack, he should sit or stand straight while using the inhaler. He should inhale for 3-4 seconds
-  while pressing the inhaler, hold his breath for 30 seconds, and then exhale slowly.
-  [BR]
-  [BR]
-  If an asthma attack does not improve within 30 minutes, he should be taken to the nearest doctor or emergency room.*
+  If he has coughing or wheezing, he can take two puffs of his inhaler every 4 hours. 
+  He should inhale for 3-4 seconds while pressing the top button, hold it for 30 seconds, then exhale.*
 ---
 id: agent_intro
 question: |
