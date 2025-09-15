@@ -477,7 +477,7 @@ question: |
 fields: 
   - Does ${ children[i].familiar() } take any medications?: children[i].takes_meds
     datatype: yesnoradio
-  - What medications does ${ children[i].familiar() } take?: children[i].meds_taken
+  - List any medication ${ children[i].familiar() } takes and how often.: children[i].meds_taken
     datatype: area 
     show if:
       variable: children[i].takes_meds
