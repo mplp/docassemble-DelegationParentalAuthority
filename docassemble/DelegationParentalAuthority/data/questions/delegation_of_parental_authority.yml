@@ -637,6 +637,9 @@ fields:
     choices: children
     none of the above: False
     all of the above: True
+    show if: 
+      code: |
+        children.target_number > 1
   - Provider type: healthcare_provider[i].provider_type
     choices:
       - Primary care physician/pediatrician: primary
@@ -654,6 +657,16 @@ fields:
       healthcare_provider[i].address_fields()
   - Phone: healthcare_provider[i].phone_number
     datatype: phone
+validation code: |
+  if len(children.complete_elements()) == 1:
+
+    only_child = children[0]
+
+    if not defined("healthcare_provider[i].children_treated"):
+      healthcare_provider[i].children_treated = []
+
+    if only_child not in healthcare_provider[i].children_treated:
+      healthcare_provider[i].children_treated.append(only_child)
 ---
 id: provider there_is_another
 question: |
