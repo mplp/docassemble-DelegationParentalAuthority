@@ -222,9 +222,10 @@ code: |
 ---
 code: |
   if len(healthcare_provider.complete_elements()) > 0:
-    for provider in healthcare_provider:
+  
+    for provider in list(healthcare_provider):
 
-      for child_treated in provider.children_treated:
+      for child_treated in list(provider.children_treated):
 
         if child_treated not in children:
           provider.children_treated.remove(child_treated)
@@ -233,18 +234,6 @@ code: |
         healthcare_provider.remove(provider)
 
   update_providers = True
----
-id: children treated list reminder
-question: |
-  Don't forget to update your children's healthcare providers
-subquestion: |
-  **If you made any changes to the children you included**, make sure each healthcare provider's information has been also updated.
-
-  You can use the **Review/Edit** screen to revisit each healthcare provider and re-select the children they are treating.
-
-  **If a healthcare provider is not treating *any* of the children in the updated checkboxes**, you should also delete that healthcare provider.
-
-continue button field: children_treated_list_reminder
 ---
 ###################### Questions Start ######################
 ---
