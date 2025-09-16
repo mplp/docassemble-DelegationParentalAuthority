@@ -88,30 +88,36 @@ review:
 
       **${ item }**
 
-      % if item.has_allergies:
+      % if item.has_allergies == "yes":
       * **Allergies**: ${ item.allergies }
+      % elif item.has_allergies == "no":
+      * **Allergies**: No known allergies.
       % else:
-      * **Allergies**: *None listed*
+      * **Allergies**: *No information provided.*
       % endif
-      % if item.has_med_conditions:
+      % if item.has_med_conditions == "yes":
       * **Medical Conditions**: ${ item.med_conditions }
+      % elif item.has_med_conditions == "no":
+      * **Medical Conditions**: No known conditions.
       % else:
-      * **Medical Conditions**: *None listed*
+      * **Medical Conditions**: *No information provided.*
       % endif
-      % if item.takes_meds:
+      % if item.takes_meds == "yes":
       * **Medications Taken**: ${ item.meds_taken }
+      % elif item.takes_meds == "no":
+      * **Medications Taken**: None.
       % else:
-      * **Medications Taken**: *None listed*
+      * **Medications Taken**: *No information provided.*
       % endif
-      % if item.cannot_take_meds:
+      % if item.cannot_take_meds == "yes":
       * **Cannot Take the Following Medications**: ${ item.meds_avoided }
-      % else:
-      * **Cannot Take the Following Medications**: *None listed*
+      % elif item.cannot_take_meds == "unknown":
+      * **Cannot Take the Following Medications**: *No information provided.*
       % endif
       % if item.other_health_info != "":
       * **Other Health Information**: ${ item.other_health_info }
       % else:
-      * **Other Health Information**: *None listed*
+      * **Other Health Information**: *No information provided.*
       % endif
       [BR]
       [BR]
