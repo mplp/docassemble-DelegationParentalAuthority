@@ -129,13 +129,13 @@ code: |
 ---
 code: |
   children[i].name.first
-  if children[i].has_allergies:
+  if children[i].has_allergies == "yes":
     children[i].allergies
-  if children[i].has_med_conditions:
+  if children[i].has_med_conditions == "yes":
     children[i].med_conditions
-  if children[i].takes_meds:
+  if children[i].takes_meds == "yes":
     children[i].meds_taken
-  if children[i].cannot_take_meds:
+  if children[i].cannot_take_meds == "yes":
     children[i].meds_avoided
   children[i].other_health_info
   children[i].complete = True
@@ -448,26 +448,34 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any allergies?: children[i].has_allergies
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What allergies does ${ children[i].familiar() } have?: children[i].allergies
     datatype: area 
     show if:
       variable: children[i].has_allergies
-      is: True
+      is: "yes"
 ---
 id: child medical conditions
 sets:
-  - children[i].has_medical_conditions
+  - children[i].has_med_conditions
 question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any medical conditions?: children[i].has_med_conditions
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medical conditions does ${ children[i].familiar() } have?: children[i].med_conditions
     datatype: area 
     show if:
       variable: children[i].has_med_conditions
-      is: True
+      is: "yes"
 ---
 id: child medications taken
 sets:
@@ -476,12 +484,16 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } take any medications?: children[i].takes_meds
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medications does ${ children[i].familiar() } take?: children[i].meds_taken
     datatype: area 
     show if:
       variable: children[i].takes_meds
-      is: True
+      is: "yes"
 ---
 id: child medications avoided
 sets:
@@ -490,12 +502,16 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Are there any medications ${ children[i].familiar() } **cannot** take?: children[i].cannot_take_meds
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medications can ${ children[i].familiar() } **not** take?: children[i].meds_avoided
     datatype: area 
     show if:
       variable: children[i].cannot_take_meds
-      is: True
+      is: "yes"
 ---
 id: child other health info
 sets:
