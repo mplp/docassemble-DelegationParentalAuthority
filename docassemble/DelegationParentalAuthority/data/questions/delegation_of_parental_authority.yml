@@ -24,6 +24,13 @@ metadata:
   al_weaver_version: "1.10.3"
   generated_on: "2023-11-21"
 ---
+code: |
+  resource_page_url_only = "https://michiganlegalhelp.org/node/10284"
+
+  resource_page_name = "Giving Someone Else Parental Authority over Your Child"
+
+  survey_link_url_only = "https://www.surveymonkey.com/r/S3NGDPG"
+---
 features:
   labels above fields: True
 ---
@@ -129,13 +136,13 @@ code: |
 ---
 code: |
   children[i].name.first
-  if children[i].has_allergies:
+  if children[i].has_allergies == "yes":
     children[i].allergies
-  if children[i].has_med_conditions:
+  if children[i].has_med_conditions == "yes":
     children[i].med_conditions
-  if children[i].takes_meds:
+  if children[i].takes_meds == "yes":
     children[i].meds_taken
-  if children[i].cannot_take_meds:
+  if children[i].cannot_take_meds == "yes":
     children[i].meds_avoided
   children[i].other_health_info
   children[i].complete = True
@@ -236,6 +243,12 @@ code: |
   update_providers = True
 ---
 ###################### Questions Start ######################
+---
+template: survey_embed_script
+content: |
+  <script>
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdzxwuSQVZA5gS55pIr4pOSbT9azdCJQBwYqlnbYVzNve.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
+  </script>
 ---
 id: DPA intro landing FirstScreen
 question: |
@@ -463,26 +476,34 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any allergies?: children[i].has_allergies
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What allergies does ${ children[i].familiar() } have?: children[i].allergies
     datatype: area 
     show if:
       variable: children[i].has_allergies
-      is: True
+      is: "yes"
 ---
 id: child medical conditions
 sets:
-  - children[i].has_medical_conditions
+  - children[i].has_med_conditions
 question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } have any medical conditions?: children[i].has_med_conditions
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medical conditions does ${ children[i].familiar() } have?: children[i].med_conditions
     datatype: area 
     show if:
       variable: children[i].has_med_conditions
-      is: True
+      is: "yes"
 ---
 id: child medications taken
 sets:
@@ -491,12 +512,16 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Does ${ children[i].familiar() } take any medications?: children[i].takes_meds
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medications does ${ children[i].familiar() } take?: children[i].meds_taken
     datatype: area 
     show if:
       variable: children[i].takes_meds
-      is: True
+      is: "yes"
 ---
 id: child medications avoided
 sets:
@@ -505,22 +530,44 @@ question: |
     Your Children: ${ children[i].familiar() }'s health information
 fields: 
   - Are there any medications ${ children[i].familiar() } **cannot** take?: children[i].cannot_take_meds
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes: yes 
+      - No: no 
+      - I don't know, or I want to skip this question: unknown
   - What medications can ${ children[i].familiar() } **not** take?: children[i].meds_avoided
     datatype: area 
     show if:
       variable: children[i].cannot_take_meds
-      is: True
+      is: "yes"
 ---
 id: child other health info
 sets:
   - children[i].other_health_info
 question: |
     Your Children: ${ children[i].familiar() }'s health information
+subquestion: |
+  ${ collapse_template(other_health_info_exp) }
 fields: 
   - Is there any other health information you want your caregiver to know about ${ children[i].familiar() }?: children[i].other_health_info
     datatype: area 
     required: False
+---
+template: other_health_info_exp
+subject: |
+  What should I include?
+content: |
+  You should provide any **other information** that could help someone take care of your child.
+
+  This might include things like additional instructions on how give your child their medication or help them with a medical device.
+  
+  Here is an example:
+
+  *My child uses an albuterol inhaler to manage asthma attacks. 
+  [BR]
+  [BR]
+  If he has coughing or wheezing, he can take two puffs of his inhaler every 4 hours. 
+  He should inhale for 3-4 seconds while pressing the top button, hold it for 30 seconds, then exhale.*
 ---
 id: agent_intro
 question: |
@@ -739,10 +786,12 @@ subquestion: |
   You **do not** need to refresh your screen. Hang in there!
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
 ---
 objects:
   - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
+  - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
 ---
 attachment:
   name: delegation of parental authority
@@ -750,5 +799,11 @@ attachment:
   variable name: delegation_of_parental_authority_attachment[i]
   skip undefined: True
   docx template file: delegation_of_parental_authority.docx
+  tagged pdf: True
+---
+attachment:
+  name: instructions
+  variable name: instructions[i]        
+  docx template file: dpa_instructions.docx
   tagged pdf: True
 ---
