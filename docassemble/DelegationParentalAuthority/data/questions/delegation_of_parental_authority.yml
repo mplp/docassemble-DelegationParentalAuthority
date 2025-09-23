@@ -502,10 +502,28 @@ sets:
   - children[i].other_health_info
 question: |
     Your Children: ${ children[i].familiar() }'s health information
+subquestion: |
+  ${ collapse_template(other_health_info_exp) }
 fields: 
   - Is there any other health information you want your caregiver to know about ${ children[i].familiar() }?: children[i].other_health_info
     datatype: area 
     required: False
+---
+template: other_health_info_exp
+subject: |
+  What should I include?
+content: |
+  You should provide any **other information** that could help someone take care of your child.
+
+  This might include things like additional instructions on how give your child their medication or help them with a medical device.
+  
+  Here is an example:
+
+  *My child uses an albuterol inhaler to manage asthma attacks. 
+  [BR]
+  [BR]
+  If he has coughing or wheezing, he can take two puffs of his inhaler every 4 hours. 
+  He should inhale for 3-4 seconds while pressing the top button, hold it for 30 seconds, then exhale.*
 ---
 id: agent_intro
 question: |
