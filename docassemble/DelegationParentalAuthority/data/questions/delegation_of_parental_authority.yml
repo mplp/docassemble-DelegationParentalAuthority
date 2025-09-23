@@ -24,6 +24,13 @@ metadata:
   al_weaver_version: "1.10.3"
   generated_on: "2023-11-21"
 ---
+code: |
+  resource_page_url_only = "https://michiganlegalhelp.org/node/10284"
+
+  resource_page_name = "Giving Someone Else Parental Authority over Your Child"
+
+  survey_link_url_only = "https://www.surveymonkey.com/r/S3NGDPG"
+---
 features:
   labels above fields: True
 ---
@@ -221,6 +228,12 @@ code: |
   gather_dpa_start_stop = True
 ---
 ###################### Questions Start ######################
+---
+template: survey_embed_script
+content: |
+  <script>
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdzxwuSQVZA5gS55pIr4pOSbT9azdCJQBwYqlnbYVzNve.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
+  </script>
 ---
 id: DPA intro landing FirstScreen
 question: |
@@ -740,19 +753,12 @@ subquestion: |
   You **do not** need to refresh your screen. Hang in there!
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_Post_interview_instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
 ---
 objects:
-  - delegation_of_parental_authority_Post_interview_instructions: ALDocument.using(title="Instructions", filename="delegation_of_parental_authority_next_steps.docx", enabled=True, has_addendum=False)
   - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
----
-attachment:
-  name: Post-interview-Instructions
-  filename: delegation_of_parental_authority_next_steps
-  docx template file: delegation_of_parental_authority_next_steps.docx
-  variable name: delegation_of_parental_authority_Post_interview_instructions[i]
-  skip undefined: True
-  tagged pdf: True
+  - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
 ---
 attachment:
   name: delegation of parental authority
@@ -760,5 +766,11 @@ attachment:
   variable name: delegation_of_parental_authority_attachment[i]
   skip undefined: True
   docx template file: delegation_of_parental_authority.docx
+  tagged pdf: True
+---
+attachment:
+  name: instructions
+  variable name: instructions[i]        
+  docx template file: dpa_instructions.docx
   tagged pdf: True
 ---
