@@ -228,17 +228,25 @@ code: |
   gather_dpa_start_stop = True
 ---
 code: |
-  if len(healthcare_provider.complete_elements()) > 0:
-  
-    for provider in list(healthcare_provider):
+  if healthcare_provider.number():
 
-      for child_treated in list(provider.children_treated):
+    empty_providers = []
+  
+    for provider in healthcare_provider:
+
+      for child_treated in provider.children_treated:
 
         if child_treated not in children:
           provider.children_treated.remove(child_treated)
 
-      if len(provider.children_treated) < 1:
-        healthcare_provider.remove(provider)
+      if provider.children_treated.number() == 0:
+        empty_providers.append(provider)
+        # healthcare_provider.remove(provider)
+
+    for provider in empty_providers:
+      healthcare_provider.remove(provider)
+    
+    del empty_providers
 
   update_providers = True
 ---
@@ -710,7 +718,7 @@ validation code: |
     only_child = children[0]
 
     if not defined("healthcare_provider[i].children_treated"):
-      healthcare_provider[i].children_treated = []
+      healthcare_provider[i].initializeAttribute("children_treated", DAList, auto_gather=False, gathered=True)
 
     if only_child not in healthcare_provider[i].children_treated:
       healthcare_provider[i].children_treated.append(only_child)
