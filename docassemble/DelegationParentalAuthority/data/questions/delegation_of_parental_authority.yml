@@ -690,6 +690,8 @@ fields:
   - Which children are being treated by this provider?: healthcare_provider[i].children_treated
     datatype: object_checkboxes
     choices: children
+    required: True
+    minlength: 1
     none of the above: False
     all of the above: True
     show if: 
@@ -722,10 +724,6 @@ validation code: |
 
     if only_child not in healthcare_provider[i].children_treated:
       healthcare_provider[i].children_treated.append(only_child)
-  
-  if children.target_number > 1:
-    if len(healthcare_provider[i].children_treated) < 1:
-      validation_error("Select at least one child treated by this provider.")
 ---
 id: provider there_is_another
 question: |
