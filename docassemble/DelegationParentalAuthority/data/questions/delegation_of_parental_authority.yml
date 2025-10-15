@@ -60,7 +60,7 @@ sections:
   - review_start_end_date: "Start/End Date"
   - review_agent_info: "Agent Information"
   - review_children_info: "Children Information"
-  - review_healthcare_info: "Healthcare Information"
+  - review_healthcare_info: "Health Care Information"
   - review_get_forms_info: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
@@ -617,9 +617,9 @@ fields:
 ---
 id: providers intro
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
-  The next few screens will ask about your children's health care providers.
+  The next few screens will ask about your children's health care.
 
   **These questions are optional**. However, completing this information could help the Agent know what to do for your children.
   Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
@@ -628,14 +628,14 @@ continue button field: providers_intro
 ---
 id: wants health insurance info
 question: |
-  Health Care Providers
+  Health Care Information
 fields:
   - Do you want to add your children's **health insurance** information?: has_health_insurance_info
     datatype: yesnoradio
 ---
 id: health insurance info
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
   Enter your children's **health insurance** information.
 fields:
@@ -651,7 +651,7 @@ validation code: |
 ---
 id: Add provider information
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
   ${ collapse_template(providers_important_exp) }
 fields:
@@ -679,7 +679,7 @@ sets:
   - healthcare_provider[i].address.state 
   - healthcare_provider[i].address.zip  
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
   % if len(healthcare_provider.complete_elements()) < 1:
   Enter the provider's information.
@@ -727,7 +727,7 @@ validation code: |
 ---
 id: provider there_is_another
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
   ${ collapse_template(healthcare_provider_list) }
 fields:
@@ -750,7 +750,7 @@ content: |
 ---
 id: hospital there_are_any
 question: |
-  Health Care Providers
+  Health Care Information
 fields:
   - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
@@ -764,7 +764,7 @@ sets:
   - hospital[i].state 
   - hospital[i].zip  
 question: |
-  Health Care Providers
+  Health Care Information
 fields:
   - Hospital name: hospital[i].hospital_name
   - code: |
