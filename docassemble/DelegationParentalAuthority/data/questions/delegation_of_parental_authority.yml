@@ -628,14 +628,14 @@ continue button field: providers_intro
 ---
 id: wants health insurance info
 question: |
-  Health Care Information
+  Health Insurance
 fields:
   - Do you want to add your children's **health insurance** information?: has_health_insurance_info
     datatype: yesnoradio
 ---
 id: health insurance info
 question: |
-  Health Care Information
+  Health Insurance
 subquestion: |
   Enter your children's **health insurance** information.
 fields:
@@ -651,7 +651,7 @@ validation code: |
 ---
 id: Add provider information
 question: |
-  Health Care Information
+  Health Care Providers
 subquestion: |
   ${ collapse_template(providers_important_exp) }
 fields:
@@ -679,7 +679,7 @@ sets:
   - healthcare_provider[i].address.state 
   - healthcare_provider[i].address.zip  
 question: |
-  Health Care Information
+  Health Care Providers
 subquestion: |
   % if len(healthcare_provider.complete_elements()) < 1:
   Enter the provider's information.
@@ -727,7 +727,7 @@ validation code: |
 ---
 id: provider there_is_another
 question: |
-  Health Care Information
+  Health Care Providers
 subquestion: |
   ${ collapse_template(healthcare_provider_list) }
 fields:
@@ -750,7 +750,7 @@ content: |
 ---
 id: hospital there_are_any
 question: |
-  Health Care Information
+  Hospital
 fields:
   - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
@@ -764,7 +764,7 @@ sets:
   - hospital[i].state 
   - hospital[i].zip  
 question: |
-  Health Care Information
+  Hospital
 fields:
   - Hospital name: hospital[i].hospital_name
   - code: |
