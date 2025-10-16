@@ -83,6 +83,8 @@ review:
     show if: defined('children.target_number')
   - Edit: 
       - children.revisit
+      - recompute:
+        - update_providers
     button: |-
       % for item in children:
 
@@ -188,6 +190,7 @@ review:
       % elif item.provider_type == "psychiatrist":
       * **Type**: Psychiatrist
       % endif
+      * **Children treated**: ${ comma_and_list(item.children_treated) }
       * **Address**: ${ item.address.on_one_line() }
       * **Phone**: ${ phone_number_formatted(item.phone_number) }
       % if len(healthcare_provider.complete_elements()) > 1:
@@ -273,6 +276,8 @@ columns:
       capitalize(row_item.provider_type_other) if defined("row_item.provider_type_other") else capitalize(row_item.provider_type)
   - Name: |
       row_item.name.full() if defined("row_item.name.first") else ""
+  - Children Treated: |
+      comma_and_list(row_item.children_treated_list) if defined("row_item.children_treated_list") else ""
   - Address: |
       row_item.address.on_one_line() if defined("row_item.address") else ""
   - Phone: |

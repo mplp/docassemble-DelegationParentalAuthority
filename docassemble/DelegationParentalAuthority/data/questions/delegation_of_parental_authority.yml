@@ -58,9 +58,9 @@ sections:
   - signpost_intro: "Introduction"
   - review_parent_info: "Parent Information"
   - review_start_end_date: "Start/End Date"
-  - review_children_info: "Children Information"
   - review_agent_info: "Agent Information"
-  - review_healthcare_info: "Healthcare Information"
+  - review_children_info: "Children Information"
+  - review_healthcare_info: "Health Care Information"
   - review_get_forms_info: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
@@ -226,6 +226,29 @@ code: |
     dpa_end
 
   gather_dpa_start_stop = True
+---
+code: |
+  if healthcare_provider.number():
+
+    empty_providers = []
+  
+    for provider in healthcare_provider:
+
+      for child_treated in provider.children_treated:
+
+        if child_treated not in children:
+          provider.children_treated.remove(child_treated)
+
+      if provider.children_treated.number() == 0:
+        empty_providers.append(provider)
+        # healthcare_provider.remove(provider)
+
+    for provider in empty_providers:
+      healthcare_provider.remove(provider)
+    
+    del empty_providers
+
+  update_providers = True
 ---
 ###################### Questions Start ######################
 ---
@@ -594,9 +617,9 @@ fields:
 ---
 id: providers intro
 question: |
-  Health Care Providers
+  Health Care Information
 subquestion: |
-  The next few screens will ask about your children's health care providers.
+  The next few screens will ask about your children's health care.
 
   **These questions are optional**. However, completing this information could help the Agent know what to do for your children.
   Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
@@ -605,14 +628,14 @@ continue button field: providers_intro
 ---
 id: wants health insurance info
 question: |
-  Health Care Providers
+  Health Insurance
 fields:
   - Do you want to add your children's **health insurance** information?: has_health_insurance_info
     datatype: yesnoradio
 ---
 id: health insurance info
 question: |
-  Health Care Providers
+  Health Insurance
 subquestion: |
   Enter your children's **health insurance** information.
 fields:
@@ -664,6 +687,16 @@ subquestion: |
   Enter the ${ordinal(i)} provider's information.
   % endif
 fields:
+  - Which children are being treated by this provider?: healthcare_provider[i].children_treated
+    datatype: object_checkboxes
+    choices: children
+    required: True
+    minlength: 1
+    none of the above: False
+    all of the above: True
+    show if: 
+      code: |
+        children.target_number > 1
   - Provider type: healthcare_provider[i].provider_type
     choices:
       - Primary care physician/pediatrician: primary
@@ -681,6 +714,16 @@ fields:
       healthcare_provider[i].address_fields()
   - Phone: healthcare_provider[i].phone_number
     datatype: phone
+validation code: |
+  if len(children.complete_elements()) == 1:
+
+    only_child = children[0]
+
+    if not defined("healthcare_provider[i].children_treated"):
+      healthcare_provider[i].initializeAttribute("children_treated", DAList, auto_gather=False, gathered=True)
+
+    if only_child not in healthcare_provider[i].children_treated:
+      healthcare_provider[i].children_treated.append(only_child)
 ---
 id: provider there_is_another
 question: |
@@ -707,7 +750,7 @@ content: |
 ---
 id: hospital there_are_any
 question: |
-  Health Care Providers
+  Hospital
 fields:
   - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
@@ -721,7 +764,7 @@ sets:
   - hospital[i].state 
   - hospital[i].zip  
 question: |
-  Health Care Providers
+  Hospital
 fields:
   - Hospital name: hospital[i].hospital_name
   - code: |
