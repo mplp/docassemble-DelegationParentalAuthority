@@ -181,7 +181,7 @@ code: |
     dpa_end_choices.append({'31_days_after_return':'31 days after I return'})
     dpa_end_choices.append({'specific_date':'Specific date'})
   else:
-    dpa_end_choices.append({'6_months_after_start':'6 months from the date it starts'})
+    dpa_end_choices.append({'6_months_after_start':'180 days from the date it starts'})
     dpa_end_choices.append({'earlier_date':'On an earlier date'})
 ---
 code: |
@@ -366,20 +366,20 @@ content: |
   * deployed in a foreign country, **or** 
   * getting ready to deploy to a foreign country.
 
-  In most cases, a Delegation of Parental Authority (DPA) can only be in place for 6 months. However, if you are a service member deployed in a foreign country, a DPA can be in place during your entire deployment, plus 31 days after you return.
+  In most cases, a Delegation of Parental Authority (DPA) can only be in place for 180 days. However, if you are a service member deployed in a foreign country, a DPA can be in place during your entire deployment, plus 31 days after you return.
 ---
 id: dpa duration intro
 question: |
   DPA Duration 
 subquestion: |
   % if military:
-  Although most of the time a DPA can only be in place for 6 months, service members deployed to a foreign country can have a DPA in place as long as they are deployed, and then for 31 days after they return. This is true even if the deployment is longer than 6 months. 
+  Although most of the time a DPA can only be in place for 180 days, service members deployed to a foreign country can have a DPA in place as long as they are deployed, and then for 31 days after they return. This is true even if the deployment is longer than 180 days. 
 
   A DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make decisions for your child, the caregiver does not have a right to interfere.
 
   You can always end a DPA even if this form says it will be in place until a later date. You can revoke (or cancel) a DPA by telling the named caregiver that you are ending it. It is a good idea to also end a DPA in writing.
   % else:
-  You can choose when this DPA starts and ends. It can only be in place for 6 months, but you can sign another DPA when this one ends, if needed. 
+  You can choose when this DPA starts and ends. It can only be in place for 180 days, but you can sign another DPA when this one ends, if needed. 
 
   No matter which dates you choose, a DPA only gives the caregiver power while a child’s parents are gone. When a parent is present to make a decision for your children, the caregiver does not have a right to interfere.
 
