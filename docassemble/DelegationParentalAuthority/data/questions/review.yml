@@ -71,7 +71,7 @@ review:
       % elif dpa_end == "31_days_after_return":
       31 days after I return from military deployment.
       % elif dpa_end == "6_months_after_start":
-      6 months from the start date. 
+      180 days from the start date. 
       % endif
   - raw html: |
       ${ next_accordion('<h2 class="h5">Children</h2>') }
