@@ -25,6 +25,15 @@ metadata:
   generated_on: "2023-11-21"
 ---
 code: |
+  stuff_to_snapshot['zip'] = showifdef('agent[0].address.zip ')
+  stuff_to_snapshot['number_of_forms'] = len(al_court_bundle.enabled_documents())
+  stuff_to_snapshot['end_time'] = str(current_datetime().format_datetime(format='yyyy-MM-dd HH:mm'))
+  if snapshot_dv_question == True:
+    stuff_to_snapshot['dv_present'] = showifdef('snapshot_dv_present')
+  reconsider('snapshot_interview_state')
+  snapshot_download = True
+---
+code: |
   resource_page_url_only = "https://michiganlegalhelp.org/node/10284"
 
   resource_page_name = "Giving Someone Else Parental Authority over Your Child"
@@ -114,8 +123,9 @@ code: |
   if hospital.there_are_any:
     hospital.gather()
   
+  MLH_patience_assembling
   nav.set_section("review_get_forms_info")
-  have_patience_download
+  snapshot_download
   MLH_download
 
   interview_order_delegation_of_parental_authority = True
@@ -625,6 +635,7 @@ subquestion: |
   Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
 
 continue button field: providers_intro
+progress: 66
 ---
 id: wants health insurance info
 question: |
@@ -657,6 +668,7 @@ subquestion: |
 fields:
   - Do you want to add the names and contact information of your children's **health care providers**?: healthcare_provider.there_are_any
     datatype: yesnoradio
+progress: 75
 ---
 template: providers_important_exp
 subject: |
@@ -754,6 +766,7 @@ question: |
 fields:
   - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
+progress: 90
 ---
 id: hospital information
 sets:
@@ -786,21 +799,12 @@ subquestion: |
   Remember to come back to this window to continue and sign your form.
 continue button field: preview_question
 ---
-id: patience download
-continue button field: have_patience_download
-question: |
-  Almost done
-subquestion: |
-  After you tap **${MLH_continue_button_label}**, it may take a few minutes to finish making your forms.
-
-  You **do not** need to refresh your screen. Hang in there!
----
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="Delegation of Parental Authority", enabled=True)
 ---
 objects:
-  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
+  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="Delegation of Parental Authority", enabled=True, has_addendum=False, )
   - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
 ---
 attachment:
