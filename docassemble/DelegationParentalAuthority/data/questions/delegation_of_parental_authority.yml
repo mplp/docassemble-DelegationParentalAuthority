@@ -44,9 +44,6 @@ features:
   labels above fields: True
 ---
 code: |
-  github_repo_name =  'docassemble-DelegationOfParentalAuthority'
----
-code: |
   interview_short_title = "Get a Delegation of parental authority"
 ---
 code: |
@@ -58,9 +55,7 @@ code: |
   MLH_court_forms = True
   MLH_time_min = 15
   MLH_time_max = 30
-  # MLH_case_type_language = 'The two-letter case type code will be PP, PH, or PJ.'
   MLH_esign_supported = True
-  # survey_link_url_only = "https://www.surveymonkey.com/r/3BXDW9M"
   MLH_form_type = "forms"
 ---
 sections:
