@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.DelegationParentalAuthority',
-      version='1.0.0',
+      version='0.0.0',
       description=('Delegation of Parental Authority'),
       long_description='# docassemble.DelegationOfParentalAuthority\r\n\r\nDelegation of Parental Authority\r\n\r\n## Author\r\nMichigan Legal Help\r\n\r\n## Changelog\r\n* 2/5/26  1.0.0 Initial launch',
       long_description_content_type='text/markdown',
