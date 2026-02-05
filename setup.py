@@ -53,7 +53,7 @@ setup(name='docassemble.DelegationParentalAuthority',
       license='MIT',
       url='https://michiganlegalhelp.org',
       packages=find_namespace_packages(),
-      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@bates_number_to_aldoc', 'docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction'],
+      install_requires=['docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/DelegationParentalAuthority/', package='docassemble.DelegationParentalAuthority'),
      )
