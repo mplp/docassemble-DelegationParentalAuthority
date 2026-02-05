@@ -52,11 +52,9 @@ code: |
 id: interview config code block
 code: |
   github_repo_name = 'docassemble-DelegationParentalAuthority' if get_config('debug') else 'docassemble-UserFeedback'
-  MLH_court_forms = True
   MLH_time_min = 15
   MLH_time_max = 30
-  MLH_esign_supported = True
-  MLH_form_type = "forms"
+  MLH_form_type = "form"
 ---
 sections:
   - signpost_intro: "Introduction"
@@ -117,7 +115,8 @@ code: |
     healthcare_provider.gather()
   if hospital.there_are_any:
     hospital.gather()
-  
+
+  MLH_outro_saving_answers
   MLH_patience_assembling
   nav.set_section("review_get_forms_info")
   snapshot_download

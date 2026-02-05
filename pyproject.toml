@@ -10,11 +10,15 @@ version = "1.0.0"
 description = "Delegation of Parental Authority"
 readme = "README.md"
 authors = [
-    { name = "Emily Kress Miller", email = "ekressmiller@lsscm.org" },
+    { name = "Michigan Legal Help", email = "michiganlegalhelp@mplp.org" },
 ]
 dependencies = [
     "docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@bates_number_to_aldoc",
     "docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction",
+]
+license = "MIT"
+license-files = [
+    "LICENSE",
 ]
 
 [project.urls]
