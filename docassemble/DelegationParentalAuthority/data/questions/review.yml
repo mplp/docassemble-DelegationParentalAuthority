@@ -11,7 +11,7 @@ question: |
   Review your answers
 review:
   - note: |
-      % if len(users.complete_elements()) > 0:
+      % if defined('users[0]') and len(users.complete_elements()) > 0:
       ${ review_accordion_explainer }
       % else:
       ${ review_empty_explainer }

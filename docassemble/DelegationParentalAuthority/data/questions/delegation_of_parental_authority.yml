@@ -25,6 +25,15 @@ metadata:
   generated_on: "2023-11-21"
 ---
 code: |
+  stuff_to_snapshot['zip'] = showifdef('agent[0].address.zip ')
+  stuff_to_snapshot['number_of_forms'] = len(al_court_bundle.enabled_documents())
+  stuff_to_snapshot['end_time'] = str(current_datetime().format_datetime(format='yyyy-MM-dd HH:mm'))
+  if snapshot_dv_question == True:
+    stuff_to_snapshot['dv_present'] = showifdef('snapshot_dv_present')
+  reconsider('snapshot_interview_state')
+  snapshot_download = True
+---
+code: |
   resource_page_url_only = "https://michiganlegalhelp.org/node/10284"
 
   resource_page_name = "Giving Someone Else Parental Authority over Your Child"
@@ -35,9 +44,6 @@ features:
   labels above fields: True
 ---
 code: |
-  github_repo_name =  'docassemble-DelegationOfParentalAuthority'
----
-code: |
   interview_short_title = "Get a Delegation of parental authority"
 ---
 code: |
@@ -46,13 +52,9 @@ code: |
 id: interview config code block
 code: |
   github_repo_name = 'docassemble-DelegationParentalAuthority' if get_config('debug') else 'docassemble-UserFeedback'
-  MLH_court_forms = True
   MLH_time_min = 15
   MLH_time_max = 30
-  # MLH_case_type_language = 'The two-letter case type code will be PP, PH, or PJ.'
-  MLH_esign_supported = True
-  # survey_link_url_only = "https://www.surveymonkey.com/r/3BXDW9M"
-  MLH_form_type = "forms"
+  MLH_form_type = "form"
 ---
 sections:
   - signpost_intro: "Introduction"
@@ -113,9 +115,11 @@ code: |
     healthcare_provider.gather()
   if hospital.there_are_any:
     hospital.gather()
-  
+
+  MLH_outro_saving_answers
+  MLH_patience_assembling
   nav.set_section("review_get_forms_info")
-  have_patience_download
+  snapshot_download
   MLH_download
 
   interview_order_delegation_of_parental_authority = True
@@ -255,7 +259,7 @@ code: |
 template: survey_embed_script
 content: |
   <script>
-    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdzxwuSQVZA5gS55pIr4pOSbT9azdCJQBwYqlnbYVzNve.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd8qZ8ON_2FyjUqTzYvfSuztE7Uxuuxv6DJkVAp8lbynZd6.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
   </script>
 ---
 id: DPA intro landing FirstScreen
@@ -625,6 +629,7 @@ subquestion: |
   Even if the Agent already knows your children well, having all of this information together in one place can be helpful.
 
 continue button field: providers_intro
+progress: 66
 ---
 id: wants health insurance info
 question: |
@@ -657,6 +662,7 @@ subquestion: |
 fields:
   - Do you want to add the names and contact information of your children's **health care providers**?: healthcare_provider.there_are_any
     datatype: yesnoradio
+progress: 75
 ---
 template: providers_important_exp
 subject: |
@@ -754,6 +760,7 @@ question: |
 fields:
   - Do you have a preference for which **hospital** your children go to in an emergency?: hospital.there_are_any
     datatype: yesnoradio
+progress: 90
 ---
 id: hospital information
 sets:
@@ -786,21 +793,12 @@ subquestion: |
   Remember to come back to this window to continue and sign your form.
 continue button field: preview_question
 ---
-id: patience download
-continue button field: have_patience_download
-question: |
-  Almost done
-subquestion: |
-  After you tap **${MLH_continue_button_label}**, it may take a few minutes to finish making your forms.
-
-  You **do not** need to refresh your screen. Hang in there!
----
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[instructions, delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="All forms and instructions", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[delegation_of_parental_authority_attachment], filename="Delegation of Parental Authority.pdf", title="Delegation of Parental Authority", enabled=True)
 ---
 objects:
-  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="delegation_of_parental_authority", enabled=True, has_addendum=False, )
+  - delegation_of_parental_authority_attachment: ALDocument.using(title="Delegation of Parental Authority", filename="Delegation of Parental Authority", enabled=True, has_addendum=False, )
   - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
 ---
 attachment:

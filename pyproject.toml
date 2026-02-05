@@ -1,0 +1,30 @@
+[build-system]
+requires = [
+    "setuptools==80.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docassemble.DelegationParentalAuthority"
+version = "1.0.0"
+description = "Delegation of Parental Authority"
+readme = "README.md"
+authors = [
+    { name = "Michigan Legal Help", email = "michiganlegalhelp@mplp.org" },
+]
+dependencies = [
+    "docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@bates_number_to_aldoc",
+    "docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction",
+]
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
+
+[project.urls]
+Homepage = "https://michiganlegalhelp.org"
+
+[tool.setuptools.packages.find]
+where = [
+    ".",
+]

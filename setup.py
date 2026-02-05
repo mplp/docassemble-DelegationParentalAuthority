@@ -1,6 +1,6 @@
 import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from fnmatch import fnmatchcase
 from distutils.util import convert_path
 
@@ -44,18 +44,16 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.DelegationParentalAuthority',
-      version='0.1.0',
+      version='1.0.0',
       description=('Delegation of Parental Authority'),
-      long_description='# docassemble.DelegationOfParentalAuthorityE\r\n\r\nDelegation of parental authority\r\n\r\n## Author\r\n\r\nMichigan Legal Help\r\n\r\n',
+      long_description='# docassemble.DelegationOfParentalAuthority\r\n\r\nDelegation of Parental Authority\r\n\r\n## Author\r\nMichigan Legal Help\r\n\r\n## Changelog\r\n* 2/5/26  1.0.0 Initial launch',
       long_description_content_type='text/markdown',
-      author='Emily Kress Miller',
-      author_email='ekressmiller@lsscm.org',
-      license='',
+      author='Michigan Legal Help',
+      author_email='michiganlegalhelp@mplp.org',
+      license='MIT',
       url='https://michiganlegalhelp.org',
-      packages=find_packages(),
-      namespace_packages=['docassemble'],
-      install_requires=['docassemble.AssemblyLine>=2.27.0', 'docassemble.mlhframework'],
+      packages=find_namespace_packages(),
+      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@bates_number_to_aldoc', 'docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/DelegationParentalAuthority/', package='docassemble.DelegationParentalAuthority'),
      )
-
