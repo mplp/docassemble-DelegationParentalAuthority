@@ -402,7 +402,7 @@ fields:
       - The date I sign it: date_signed
       - A different date: different_date
   - On what specific date would you like the DPA to start?: dpa_start_date
-    datatype: date
+    datatype: ThreePartsDate
     show if:
       variable: dpa_start
       is: different_date
@@ -421,7 +421,7 @@ fields:
     code: |
       dpa_end_choices
   - On what specific date would you like the DPA to end?: dpa_end_date
-    datatype: date
+    datatype: ThreePartsDate
     js show if: |
       val('dpa_end') == 'specific_date' || val('dpa_end') == 'earlier_date'
 ---
