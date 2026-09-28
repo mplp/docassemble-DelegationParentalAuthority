@@ -1,3 +1,11 @@
-# Template directory
+# docassemble.DelegationParentalAuthority
 
-If you want to use templates for document assembly, put them in this directory.
+Delegation of Parental Authority
+
+## Author
+
+Michigan Legal Help
+Lemma Legal
+
+## Changelog:
+* 9/28/26   1.0.1 Incorporated ThreePartsDate datatype.
