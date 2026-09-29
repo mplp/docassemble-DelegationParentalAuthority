@@ -13,7 +13,7 @@ authors = [
     { name = "Michigan Legal Help", email = "michiganlegalhelp@mplp.org" },
 ]
 dependencies = [
-    "docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@AddFunction",
+    "docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@main",
 ]
 license = "MIT"
 license-files = [
